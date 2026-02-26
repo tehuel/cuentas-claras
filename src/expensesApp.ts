@@ -19,6 +19,8 @@ export const expensesApp = () => ({
 	expenseAmount: '',
 	expensePaidBy: '',
 	expenses: [] as Expense[],
+	editingExpenseIndex: -1,
+	editingExpenseData: { description: '', amount: 0, paidBy: '' },
 
 	get transfers(): Transfer[] {
 		if (this.members.length === 0 || this.expenses.length === 0) {
@@ -160,6 +162,48 @@ export const expensesApp = () => ({
 			expense.participants.push(member)
 		}
 
+		this.saveState()
+	},
+
+	removeExpense(index: number) {
+		this.expenses.splice(index, 1)
+		this.saveState()
+	},
+
+	startEditExpense(index: number) {
+		const expense = this.expenses[index]
+		if (!expense) return
+
+		this.editingExpenseIndex = index
+		this.editingExpenseData = {
+			description: expense.description,
+			amount: expense.amount,
+			paidBy: expense.paidBy,
+		}
+	},
+
+	cancelEditExpense() {
+		this.editingExpenseIndex = -1
+		this.editingExpenseData = { description: '', amount: 0, paidBy: '' }
+	},
+
+	updateExpense(index: number) {
+		const expense = this.expenses[index]
+		if (!expense) return
+
+		const description = this.editingExpenseData.description.trim()
+		const amount = Number(this.editingExpenseData.amount)
+		const paidBy = this.editingExpenseData.paidBy
+
+		if (!description || !paidBy || !Number.isFinite(amount) || amount <= 0) {
+			return
+		}
+
+		expense.description = description
+		expense.amount = amount
+		expense.paidBy = paidBy
+
+		this.cancelEditExpense()
 		this.saveState()
 	},
 
