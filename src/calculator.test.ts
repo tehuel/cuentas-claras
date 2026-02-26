@@ -17,6 +17,16 @@ describe('calculateBalance', () => {
         expect(balance.length).toBe(0)
     })
 
+    it('should calculate empty balance for multiple transactions with same participant', () => {
+        const transactions: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice'] },
+            { amount: 200, from: 'Alice', participants: ['Alice'] },
+            { amount: 50, from: 'Alice', participants: ['Alice'] }
+        ]
+        const balance = calculateBalance(transactions)
+        expect(balance.length).toBe(0)
+    })
+
     it('should calculate balance for a single transaction with two participants', () => {
         const transactions: Transaction[] = [
             { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] }
