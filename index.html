@@ -8,6 +8,7 @@
   <title>cuentas-claras</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -27,9 +28,34 @@
       </ul>
 
       <ul class="list-group list-group-flush" x-show="members.length > 0">
-        <template x-for="member in members" :key="member">
-          <li class="list-group-item">
-            <span x-text="member"></span>
+        <template x-for="(member, index) in members" :key="member">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <template x-if="editingMemberIndex === index">
+              <div class="d-flex gap-2 w-100">
+                <input type="text" class="form-control" x-model="editingMemberName" 
+                  @keyup.enter="updateMember(index)"
+                  @keyup.escape="cancelEditMember()">
+                <button type="button" class="btn btn-sm btn-success" @click="updateMember(index)">
+                  <i class="bi bi-check-circle"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" @click="cancelEditMember()">
+                  <i class="bi bi-x-square"></i>
+                </button>
+              </div>
+            </template>
+            <template x-if="editingMemberIndex !== index">
+              <div class="d-flex justify-content-between align-items-center w-100">
+                <span x-text="member"></span>
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEditMember(index)">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" @click="removeMember(index)">
+                    <i class="bi bi-trash2-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </template>
           </li>
         </template>
       </ul>

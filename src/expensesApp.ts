@@ -11,8 +11,10 @@ export const expensesApp = () => ({
     // members
     memberName: '',
 	members: [] as string[],
+	editingMemberIndex: -1,
+	editingMemberName: '',
 
-    // expenses
+	// expenses
     expenseDescription: '',
 	expenseAmount: '',
 	expensePaidBy: '',
@@ -40,10 +42,89 @@ export const expensesApp = () => ({
 		}
 
 		this.members.push(name)
-		if (!this.expensePaidBy) {
-			this.expensePaidBy = name
-		}
+
+		// add member to existing expenses participants
+		this.expenses.forEach((expense) => {
+			if (!expense.participants.includes(name)) {
+				expense.participants.push(name)
+			}
+		})
+
 		this.memberName = ''
+		this.saveState()
+	},
+
+	removeMember(index: number) {
+		const memberToRemove = this.members[index]
+		if (!memberToRemove) return
+
+		// Remove from members list
+		this.members.splice(index, 1)
+
+		// Remove from expenses participants and reset paidBy if necessary
+		this.expenses.forEach((expense) => {
+			const participantIndex = expense.participants.indexOf(memberToRemove)
+			if (participantIndex > -1) {
+				expense.participants.splice(participantIndex, 1)
+			}
+			if (expense.paidBy === memberToRemove) {
+				expense.paidBy = this.members[0] || ''
+			}
+		})
+
+		// Reset expensePaidBy if it was the removed member
+		if (this.expensePaidBy === memberToRemove) {
+			this.expensePaidBy = this.members[0] || ''
+		}
+
+		this.saveState()
+	},
+
+	startEditMember(index: number) {
+		this.editingMemberIndex = index
+		this.editingMemberName = this.members[index] || ''
+	},
+
+	cancelEditMember() {
+		this.editingMemberIndex = -1
+		this.editingMemberName = ''
+	},
+
+	updateMember(index: number) {
+		const oldName = this.members[index]
+		const newName = this.editingMemberName.trim()
+
+		if (!newName || newName === oldName) {
+			this.cancelEditMember()
+			return
+		}
+
+		// Check if name already exists
+		if (this.members.includes(newName)) {
+			this.cancelEditMember()
+			return
+		}
+
+		// Update member name
+		this.members[index] = newName
+
+		// Update in expenses
+		this.expenses.forEach((expense) => {
+			if (expense.paidBy === oldName) {
+				expense.paidBy = newName
+			}
+			const participantIndex = expense.participants.indexOf(oldName)
+			if (participantIndex > -1) {
+				expense.participants[participantIndex] = newName
+			}
+		})
+
+		// Update expensePaidBy if it was the old name
+		if (this.expensePaidBy === oldName) {
+			this.expensePaidBy = newName
+		}
+
+		this.cancelEditMember()
 		this.saveState()
 	},
 
