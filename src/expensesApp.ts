@@ -4,6 +4,7 @@ type Expense = {
 	description: string
 	amount: number
 	paidBy: string
+	participants: string[]
 }
 
 export const expensesApp = () => ({
@@ -25,7 +26,7 @@ export const expensesApp = () => ({
 		const transactions: Transaction[] = this.expenses.map((expense) => ({
 			amount: expense.amount,
 			from: expense.paidBy,
-			participants: [...this.members],
+			participants: expense.participants,
 		}))
 
 		return calculateBalance(transactions)
@@ -43,6 +44,7 @@ export const expensesApp = () => ({
 			this.expensePaidBy = name
 		}
 		this.memberName = ''
+		this.saveState()
 	},
 
 	addExpense() {
@@ -58,9 +60,54 @@ export const expensesApp = () => ({
 			description,
 			amount,
 			paidBy,
+			participants: [...this.members],
 		})
 
 		this.expenseDescription = ''
 		this.expenseAmount = ''
+		this.saveState()
+	},
+
+	toggleParticipant(expenseIndex: number, member: string) {
+		const expense = this.expenses[expenseIndex]
+		if (!expense) return
+
+		const index = expense.participants.indexOf(member)
+		if (index > -1) {
+			expense.participants.splice(index, 1)
+		} else {
+			expense.participants.push(member)
+		}
+
+		this.saveState()
+	},
+
+	saveState() {
+		const state = {
+			members: this.members,
+			expenses: this.expenses,
+		}
+		localStorage.setItem('expensesAppState', JSON.stringify(state))
+	},
+
+	loadState() {
+		const saved = localStorage.getItem('expensesAppState')
+		if (!saved) return
+
+		try {
+			const state = JSON.parse(saved)
+			if (Array.isArray(state.members)) {
+				this.members = state.members
+			}
+			if (Array.isArray(state.expenses)) {
+				this.expenses = state.expenses
+			}
+		} catch (e) {
+			console.error('Failed to load state from localStorage:', e)
+		}
+	},
+
+	init() {
+		this.loadState()
 	},
 })
