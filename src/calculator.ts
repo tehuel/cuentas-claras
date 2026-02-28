@@ -10,9 +10,7 @@ export type Transfer = {
     to: string,
 }
 
-export type Balance = Transfer[]
-
-export function calculateBalance(transactions: Transaction[]): Balance {
+export function calculateBalance(transactions: Transaction[]): Transfer[] {
     // Step 1: Calculate net balance for each person
     const balanceMap: Record<string, number> = {}
 
