@@ -29,14 +29,24 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-  <div class="container py-5 d-flex flex-column gap-4" x-data="expensesApp()" x-init="init()">
-    <header class="mb-4">
-      <h1 class="display-4">
-        Cuentas Claras
-      </h1>
-      <p class="text-secondary mb-0">Manejar gastos compartidos con amigos.</p>
-    </header>
 
+  <div class="py-5 border-bottom">
+    <div class="container">
+      <header class="row align-items-center">
+        <div class="col-md">
+          <h1 class="display-5 m-0">
+            Cuentas Claras
+          </h1>
+          <p class="text-secondary m-0">Conservan Amistad</p>
+        </div>
+        <div class="col-md text-md-end">
+          <p class="m-0">Una app para manejar gastos compartidos con amigos.</p>
+        </div>
+      </header>
+    </div>
+  </div>
+
+  <div class="container d-flex flex-column gap-4 mt-3" x-data="expensesApp()" x-init="init()">
     <!-- Participantes -->
     <section class="card shadow-sm">
       <div class="card-header">
@@ -291,9 +301,18 @@
       </div>
     </section>
   </div>
-  <div class="small text-center text-secondary py-3 mt-auto">
-    Cuentas Claras, por Tehuel Torres Baldi
-  </div>
+  <footer class="small text-center text-secondary py-3 mt-auto">
+    <p>
+      <a href="https://cc.tehuel.com.ar" class="text-secondary">Cuentas Claras</a>
+      por
+      <a href="https://tehuel.com.ar" class="text-secondary">Tehuel Torres Baldi</a>
+    </p>
+    <p>
+      Te invito a <a href="https://github.com/tehuel/cuentas-claras" class="text-secondary">ver el código</a>,
+      <a href="https://github.com/tehuel/cuentas-claras/issues" class="text-secondary">reportar errores</a>
+      o <a href="https://github.com/tehuel/cuentas-claras/pulls" class="text-secondary">enviar colaboraciones</a>
+    </p>
+  </footer>
   <script type="module" src="/src/main.ts"></script>
 </body>
 
