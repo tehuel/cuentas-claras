@@ -16,6 +16,7 @@ export const expensesApp = () => ({
 	expenses: [] as Expense[],
 	editingExpenseIndex: -1,
 	editingExpenseData: { description: '', amount: 0, from: '' } as Omit<Expense, 'participants'>,
+	showExpenseForm: false,
 
 	get transfers(): Transfer[] {
 		if (this.members.length === 0 || this.expenses.length === 0) {
@@ -119,6 +120,16 @@ export const expensesApp = () => ({
 		this.saveState()
 	},
 
+	showAddExpenseForm() {
+		this.showExpenseForm = true
+	},
+
+	cancelAddExpenseForm() {
+		this.showExpenseForm = false
+		this.expenseDescription = ''
+		this.expenseAmount = ''
+	},
+
 	addExpense() {
 		const description = this.expenseDescription.trim()
 		const amount = Number(this.expenseAmount)
@@ -137,6 +148,7 @@ export const expensesApp = () => ({
 
 		this.expenseDescription = ''
 		this.expenseAmount = ''
+		this.showExpenseForm = false
 		this.saveState()
 	},
 
