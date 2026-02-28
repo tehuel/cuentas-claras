@@ -37,11 +37,11 @@
               <form class="d-flex gap-2 w-100" @submit.prevent="updateMember(index)" @keyup.escape="cancelEditMember()">
                 <input type="text" class="form-control form-control-sm" x-model="editingMemberName" x-init="$nextTick(() => $el.focus())"/>
                 <div class="d-flex gap-1 justify-content-end">
-                  <button type="submit" class="btn btn-sm btn-outline-success">
-                    <i class="bi bi-check"></i>
+                  <button type="submit" class="btn btn-sm btn-success">
+                    <i class="bi bi-check-lg"></i>
                   </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelEditMember()">
-                    <i class="bi bi-x"></i>
+                  <button type="button" class="btn btn-sm btn-secondary" @click="cancelEditMember()">
+                    <i class="bi bi-x-lg"></i>
                   </button>
                 </div>
               </form>
@@ -50,7 +50,7 @@
               <div class="d-flex gap-2 w-100 align-items-center justify-content-between">
                 <span x-text="member"></span>
                 <div class="d-flex gap-1 justify-content-end">
-                  <button type="button" class="btn btn-sm btn-outline-primary" @click="startEditMember(index)">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEditMember(index)">
                     <i class="bi bi-pencil-fill"></i>
                   </button>
                   <button type="button" class="btn btn-sm btn-outline-danger" @click="removeMember(index)">
@@ -87,20 +87,20 @@
         
         <!-- Formulario para agregar gasto -->
         <div x-show="showExpenseForm" x-transition class="mt-3">
-          <form class="row g-2 align-items-end" @submit.prevent="addExpense">
-            <div class="col-12 col-sm-4">
+          <form class="row g-2" @submit.prevent="addExpense" @keyup.escape="cancelAddExpenseForm()">
+            <div class="col">
               <label class="form-label w-100 m-0">
                 Descripción
-                <input type="text" class="form-control" x-model="expenseDescription"/>
+                <input type="text" class="form-control" x-model="expenseDescription" x-ref="descriptionInput" x-effect="showExpenseForm && $nextTick(() => $refs.descriptionInput?.focus())"/>
               </label>
             </div>
-            <div class="col-6 col-sm-3">
+            <div class="col">
               <label class="form-label w-100 m-0">
                 Monto
                 <input type="number" class="form-control" min="0" step="1" x-model="expenseAmount" />
               </label>
             </div>
-            <div class="col-6 col-sm-3">
+            <div class="col">
               <label class="form-label w-100 m-0">
                 Pagado por
                 <select class="form-select" x-model="expenseFrom">
@@ -111,13 +111,15 @@
                 </select>
               </label>
             </div>
-            <div class="col-12 col-sm-2 d-flex gap-2">
-              <button type="submit" class="btn btn-success flex-grow-1" :disabled="members.length === 0">
-                <i class="bi bi-check-lg"></i>
-              </button>
-              <button type="button" class="btn btn-secondary" @click="cancelAddExpenseForm()">
-                <i class="bi bi-x-lg"></i>
-              </button>
+            <div class="col-12 d-flex align-items-end justify-content-end">
+              <div class="d-flex gap-1">
+                <button type="submit" class="btn btn-success" :disabled="members.length === 0">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button type="button" class="btn btn-secondary" @click="cancelAddExpenseForm()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
             </div>
           </form>
         </div>
