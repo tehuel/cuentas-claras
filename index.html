@@ -30,6 +30,7 @@
 
 <body class="d-flex flex-column min-vh-100" data-bs-theme="light">
 
+  <!-- Header -->
   <div class="py-5 border-bottom">
     <div class="container">
       <header class="row align-items-center">
@@ -46,6 +47,7 @@
     </div>
   </div>
 
+  <!-- Main App Content -->
   <div class="container d-flex flex-column gap-4 my-4" x-data="expensesApp()" x-init="init()">
     <!-- Participantes -->
     <section class="card">
@@ -80,7 +82,7 @@
         </div>
       </div>
 
-      <div x-show="members.length === 0" class="card-body text-secondary text-center">
+      <div x-show="members.length === 0" class="p-3 text-secondary text-center">
         No hay participantes todavía.
       </div>
 
@@ -271,11 +273,11 @@
         <h2 class="h4 m-0">Reparto</h2>
       </div>
 
-      <div x-show="transfers.length === 0" class="p-2 text-secondary text-center">
+      <div x-show="transfers.length === 0" class="p-3 text-secondary text-center">
         No hay transferencias necesarias.
       </div>
 
-      <ul class="list-group list-group-flush" x-show="transfers.length > 0">
+      <ul x-show="transfers.length > 0" class="list-group list-group-flush border-top-0" >
         <template x-for="(transfer, index) in transfers" :key="index">
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>
@@ -292,6 +294,7 @@
     </section>
   </div>
 
+  <!-- Footer -->
   <footer class="small text-center text-secondary py-5 mt-auto border-top">
     <p class="m-0 mb-2">
       <button type="button" data-theme-toggle class="btn btn-outline-secondary border-0" aria-label="Cambiar modo claro/oscuro" title="Cambiar modo claro/oscuro">
