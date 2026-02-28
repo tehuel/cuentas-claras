@@ -8,6 +8,7 @@ export const expensesApp = () => ({
 	members: [] as string[],
 	editingMemberIndex: -1,
 	editingMemberName: '',
+	showMemberForm: true,
 
 	// expenses
     expenseDescription: '',
@@ -24,6 +25,15 @@ export const expensesApp = () => ({
 		}
 
 		return calculateBalance(this.expenses)
+	},
+
+	showAddMemberForm() {
+		this.showMemberForm = true
+	},
+
+	cancelAddMemberForm() {
+		this.showMemberForm = false
+		this.memberName = ''
 	},
 
 	addMember() {
@@ -43,6 +53,7 @@ export const expensesApp = () => ({
 		})
 
 		this.memberName = ''
+		this.showMemberForm = false
 		this.saveState()
 	},
 
