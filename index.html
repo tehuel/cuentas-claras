@@ -35,8 +35,8 @@
           <li class="list-group-item d-flex align-items-center justify-content-between gap-2">
             <template x-if="editingMemberIndex === index">
               <form class="d-flex gap-2 w-100" @submit.prevent="updateMember(index)" @keyup.escape="cancelEditMember()">
-                <input type="text" class="form-control form-control-sm" x-model="editingMemberName" x-init="$nextTick(() => $el.focus())"/>
-                <div class="d-flex gap-1 justify-content-end">
+                <input type="text" class="form-control form-control-sm flex-grow-1" x-model="editingMemberName" x-init="$nextTick(() => $el.focus())"/>
+                <div class="d-flex gap-1">
                   <button type="submit" class="btn btn-sm btn-success">
                     <i class="bi bi-check-lg"></i>
                   </button>
@@ -65,11 +65,18 @@
 
       <div class="card-footer">
         <form @submit.prevent="addMember">
-          <div class="input-group">
-            <input type="text" class="form-control" x-model="memberName" placeholder="Nombre"/>
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-plus-lg"></i> Agregar
-            </button>
+          <div class="row g-2">
+            <div class="col">
+              <label class="form-label w-100 m-0">
+                Nombre
+                <input type="text" class="form-control form-control-sm" x-model="memberName" placeholder="Nombre"/>
+              </label>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="submit" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-lg"></i> Agregar
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -80,7 +87,7 @@
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
           <h2 class="h4 m-0">Gastos</h2>
-          <button type="button" class="btn btn-primary m-0" @click="showAddExpenseForm()" x-show="!showExpenseForm">
+          <button type="button" class="btn btn-sm btn-primary m-0" @click="showAddExpenseForm()" x-show="!showExpenseForm">
             <i class="bi bi-plus-lg"></i> Agregar Gasto
           </button>
         </div>
@@ -88,22 +95,16 @@
         <!-- Formulario para agregar gasto -->
         <div x-show="showExpenseForm" x-transition class="mt-3">
           <form class="row g-2" @submit.prevent="addExpense" @keyup.escape="cancelAddExpenseForm()">
-            <div class="col">
-              <label class="form-label w-100 m-0">
-                Descripción
-                <input type="text" class="form-control" x-model="expenseDescription" x-ref="descriptionInput" x-effect="showExpenseForm && $nextTick(() => $refs.descriptionInput?.focus())"/>
-              </label>
-            </div>
-            <div class="col">
+            <div class="col-12 col-sm-4">
               <label class="form-label w-100 m-0">
                 Monto
-                <input type="number" class="form-control" min="0" step="1" x-model="expenseAmount" />
+                <input type="number" class="form-control form-control-sm" min="0" step="1" x-model="expenseAmount" x-ref="amountInput" x-effect="showExpenseForm && $nextTick(() => $refs.amountInput?.focus())"/>
               </label>
             </div>
-            <div class="col">
+            <div class="col-12 col-sm-4">
               <label class="form-label w-100 m-0">
                 Pagado por
-                <select class="form-select" x-model="expenseFrom">
+                <select class="form-select form-select-sm" x-model="expenseFrom">
                   <option value="" disabled>Participante</option>
                   <template x-for="member in members" :key="member">
                     <option :value="member" x-text="member"></option>
@@ -111,12 +112,18 @@
                 </select>
               </label>
             </div>
-            <div class="col-12 d-flex align-items-end justify-content-end">
+            <div class="col-12 col-sm-4">
+              <label class="form-label w-100 m-0">
+                Descripción
+                <input type="text" class="form-control form-control-sm" x-model="expenseDescription"/>
+              </label>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
               <div class="d-flex gap-1">
-                <button type="submit" class="btn btn-success" :disabled="members.length === 0">
+                <button type="submit" class="btn btn-sm btn-success" :disabled="members.length === 0">
                   <i class="bi bi-check-lg"></i>
                 </button>
-                <button type="button" class="btn btn-secondary" @click="cancelAddExpenseForm()">
+                <button type="button" class="btn btn-sm btn-secondary" @click="cancelAddExpenseForm()">
                   <i class="bi bi-x-lg"></i>
                 </button>
               </div>
@@ -132,31 +139,67 @@
       <ul x-show="expenses.length > 0" class="list-group list-group-flush border-top-0">
         <template x-for="(expense, index) in expenses" :key="index">
           <li class="list-group-item">
-            <div class="d-flex flex-column gap-3">
-              <!-- Información del gasto -->
-              <div class="d-flex justify-content-between align-items-center gap-3">
-                <div class="flex-grow-1">
-                  <!-- Formulario de edición -->
-                  <template x-if="editingExpenseIndex === index">
-                    <div class="d-flex flex-column gap-2">
-                      <input type="text" class="form-control form-control-sm" 
-                        x-model="editingExpenseData.description"
-                        placeholder="Descripción">
-                      <div class="d-flex gap-2">
-                        <input type="number" class="form-control form-control-sm" 
-                          x-model="editingExpenseData.amount"
-                          min="0" step="0.01" placeholder="Monto">
-                        <select class="form-select form-select-sm" x-model="editingExpenseData.from">
-                          <template x-for="member in members" :key="member">
-                            <option :value="member" x-text="member"></option>
-                          </template>
-                        </select>
-                      </div>
-                    </div>
-                  </template>
+            <!-- Modo edición -->
+            <template x-if="editingExpenseIndex === index">
+              <form @submit.prevent="updateExpense(index)" class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label w-100 m-0">
+                    Descripción
+                    <input type="text" class="form-control form-control-sm" x-model="editingExpenseData.description" placeholder="Descripción"/>
+                  </label>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <label class="form-label w-100 m-0">
+                    Monto
+                    <input type="number" class="form-control form-control-sm" min="0" step="0.01" x-model="editingExpenseData.amount" placeholder="Monto"/>
+                  </label>
+                </div>
+                <div class="col-12 col-sm-3">
+                  <label class="form-label w-100 m-0">
+                    Pagado por
+                    <select class="form-select form-select-sm" x-model="editingExpenseData.from">
+                      <template x-for="member in members" :key="member">
+                        <option :value="member" x-text="member"></option>
+                      </template>
+                    </select>
+                  </label>
+                </div>
 
-                  <!-- Detalle -->
-                  <template x-if="editingExpenseIndex !== index">
+                <!-- Participantes en edición -->
+                <div class="col-12">
+                  <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded">
+                    <span class="">Compartir entre</span>
+                    <template x-for="member in members" :key="member">
+                      <div class="form-check d-flex align-items-center gap-2">
+                        <input type="checkbox" class="form-check-input" :id="'member-' + index + '-' + member"
+                          :checked="expense.participants.includes(member)"
+                          @change="toggleParticipant(index, member)">
+                        <label class="form-check-label mb-0" :for="'member-' + index + '-' + member" x-text="member"></label>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Botones de formulario -->
+                <div class="col-12 d-flex justify-content-end">
+                  <div class="d-flex gap-1">
+                    <button type="submit" class="btn btn-sm btn-success">
+                      <i class="bi bi-check-lg"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" @click="cancelEditExpense()">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </template>
+
+            <!-- Modo normal -->
+            <template x-if="editingExpenseIndex !== index">
+              <div class="d-flex flex-column gap-3">
+                <!-- Información del gasto -->
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div class="flex-grow-1">
                     <div>
                       <span class="fw-semibold" x-text="expense.description"></span>
                       · 
@@ -164,48 +207,33 @@
                       · 
                       <span x-text="expense.from"></span>
                     </div>
-                  </template>
-                </div>
-
-                <!-- Botones de acciones -->
-                <div>
-                  <template x-if="editingExpenseIndex === index">
-                    <div class="d-flex gap-1">
-                      <button type="button" class="btn btn-sm btn-success" @click="updateExpense(index)">
-                        <i class="bi bi-check-lg"></i>
-                      </button>
-                      <button type="button" class="btn btn-sm btn-secondary" @click="cancelEditExpense()">
-                        <i class="bi bi-x-lg"></i>
-                      </button>
-                    </div>
-                  </template>
-                  <template x-if="editingExpenseIndex !== index">
-                    <div class="d-flex gap-1">
-                      <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEditExpense(index)">
-                        <i class="bi bi-pencil-fill"></i>
-                      </button>
-                      <button type="button" class="btn btn-sm btn-outline-danger" @click="removeExpense(index)">
-                        <i class="bi bi-trash2-fill"></i>
-                      </button>
-                    </div>
-                  </template>
-                </div>
-              </div>
-
-              <!-- Participantes -->
-              <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded">
-                <span class="">Compartir entre </span>
-                <template x-for="member in members" :key="member">
-                  <div class="form-check d-flex align-items-center gap-2">
-                    <input type="checkbox" class="form-check-input" :id="'member-' + index + '-' + member"
-                      :checked="expense.participants.includes(member)"
-                      @change="toggleParticipant(index, member)"
-                      :disabled="editingExpenseIndex === index">
-                    <label class="form-check-label mb-0" :for="'member-' + index + '-' + member" x-text="member"></label>
                   </div>
-                </template>
+
+                  <!-- Botones de acciones -->
+                  <div class="d-flex gap-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEditExpense(index)">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" @click="removeExpense(index)">
+                      <i class="bi bi-trash2-fill"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Participantes -->
+                <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded">
+                  <span class="">Compartir entre</span>
+                  <template x-for="member in members" :key="member">
+                    <div class="form-check d-flex align-items-center gap-2">
+                      <input type="checkbox" class="form-check-input" :id="'member-' + index + '-' + member"
+                        :checked="expense.participants.includes(member)"
+                        @change="toggleParticipant(index, member)">
+                      <label class="form-check-label mb-0" :for="'member-' + index + '-' + member" x-text="member"></label>
+                    </div>
+                  </template>
+                </div>
               </div>
-            </div>
+            </template>
           </li>
         </template>
       </ul>
