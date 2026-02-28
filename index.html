@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100" data-bs-theme="light">
 
   <div class="py-5 border-bottom">
     <div class="container">
@@ -257,7 +257,7 @@
                 </div>
 
                 <!-- Participantes -->
-                <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded">
+                <div class="d-flex flex-wrap gap-3 p-2 bg-secondary-subtle rounded">
                   <span class="">Compartir entre</span>
                   <template x-for="member in members" :key="member">
                     <div class="form-check d-flex align-items-center gap-2">
@@ -303,6 +303,11 @@
   </div>
 
   <footer class="small text-center text-secondary py-5 mt-auto border-top">
+    <p class="m-0 mb-2">
+      <button type="button" data-theme-toggle class="btn btn-outline-secondary border-0" aria-label="Cambiar modo claro/oscuro" title="Cambiar modo claro/oscuro">
+        <i class="bi bi-circle-half"></i>
+      </button>
+    </p>
     <p class="m-0">
       <a href="https://cc.tehuel.com.ar" class="text-secondary">Cuentas Claras</a>
       por
