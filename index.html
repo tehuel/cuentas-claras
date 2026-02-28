@@ -120,7 +120,7 @@
                         <input type="number" class="form-control form-control-sm" 
                           x-model="editingExpenseData.amount"
                           min="0" step="0.01" placeholder="Monto">
-                        <select class="form-select form-select-sm" x-model="editingExpenseData.paidBy">
+                        <select class="form-select form-select-sm" x-model="editingExpenseData.from">
                           <template x-for="member in members" :key="member">
                             <option :value="member" x-text="member"></option>
                           </template>
@@ -132,7 +132,7 @@
                     <div>
                       <div class="fw-semibold" x-text="expense.description"></div>
                       <div class="text-secondary text-sm">
-                        $<span x-text="expense.amount.toFixed(2)"></span> · <span x-text="expense.paidBy"></span>
+                        $<span x-text="expense.amount.toFixed(2)"></span> · <span x-text="expense.from"></span>
                       </div>
                     </div>
                   </template>
@@ -190,7 +190,7 @@
           <div class="col-6 col-sm-4">
             <label class="form-label w-100 m-0">
               Pagado por
-              <select class="form-select" x-model="expensePaidBy">
+              <select class="form-select" x-model="expenseFrom">
                 <option value="" disabled>Participante</option>
                 <template x-for="member in members" :key="member">
                   <option :value="member" x-text="member"></option>

@@ -1,11 +1,6 @@
 import { calculateBalance, type Transaction, type Transfer } from './calculator'
 
-type Expense = {
-	description: string
-	amount: number
-	paidBy: string
-	participants: string[]
-}
+type Expense = Transaction & { description: string }
 
 export const expensesApp = () => ({
     // members
@@ -17,23 +12,17 @@ export const expensesApp = () => ({
 	// expenses
     expenseDescription: '',
 	expenseAmount: '',
-	expensePaidBy: '',
+	expenseFrom: '',
 	expenses: [] as Expense[],
 	editingExpenseIndex: -1,
-	editingExpenseData: { description: '', amount: 0, paidBy: '' },
+	editingExpenseData: { description: '', amount: 0, from: '' } as Omit<Expense, 'participants'>,
 
 	get transfers(): Transfer[] {
 		if (this.members.length === 0 || this.expenses.length === 0) {
 			return []
 		}
 
-		const transactions: Transaction[] = this.expenses.map((expense) => ({
-			amount: expense.amount,
-			from: expense.paidBy,
-			participants: expense.participants,
-		}))
-
-		return calculateBalance(transactions)
+		return calculateBalance(this.expenses)
 	},
 
 	addMember() {
@@ -63,20 +52,20 @@ export const expensesApp = () => ({
 		// Remove from members list
 		this.members.splice(index, 1)
 
-		// Remove from expenses participants and reset paidBy if necessary
+		// Remove from expenses participants and reset from if necessary
 		this.expenses.forEach((expense) => {
 			const participantIndex = expense.participants.indexOf(memberToRemove)
 			if (participantIndex > -1) {
 				expense.participants.splice(participantIndex, 1)
 			}
-			if (expense.paidBy === memberToRemove) {
-				expense.paidBy = this.members[0] || ''
+			if (expense.from === memberToRemove) {
+				expense.from = this.members[0] || ''
 			}
 		})
 
-		// Reset expensePaidBy if it was the removed member
-		if (this.expensePaidBy === memberToRemove) {
-			this.expensePaidBy = this.members[0] || ''
+		// Reset expenseFrom if it was the removed member
+		if (this.expenseFrom === memberToRemove) {
+			this.expenseFrom = this.members[0] || ''
 		}
 
 		this.saveState()
@@ -112,8 +101,8 @@ export const expensesApp = () => ({
 
 		// Update in expenses
 		this.expenses.forEach((expense) => {
-			if (expense.paidBy === oldName) {
-				expense.paidBy = newName
+			if (expense.from === oldName) {
+				expense.from = newName
 			}
 			const participantIndex = expense.participants.indexOf(oldName)
 			if (participantIndex > -1) {
@@ -121,9 +110,9 @@ export const expensesApp = () => ({
 			}
 		})
 
-		// Update expensePaidBy if it was the old name
-		if (this.expensePaidBy === oldName) {
-			this.expensePaidBy = newName
+		// Update expenseFrom if it was the old name
+		if (this.expenseFrom === oldName) {
+			this.expenseFrom = newName
 		}
 
 		this.cancelEditMember()
@@ -133,16 +122,16 @@ export const expensesApp = () => ({
 	addExpense() {
 		const description = this.expenseDescription.trim()
 		const amount = Number(this.expenseAmount)
-		const paidBy = this.expensePaidBy
+		const from = this.expenseFrom
 
-		if (!description || !paidBy || !Number.isFinite(amount) || amount <= 0) {
+		if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
 			return
 		}
 
 		this.expenses.unshift({
 			description,
 			amount,
-			paidBy,
+			from,
 			participants: [...this.members],
 		})
 
@@ -178,13 +167,13 @@ export const expensesApp = () => ({
 		this.editingExpenseData = {
 			description: expense.description,
 			amount: expense.amount,
-			paidBy: expense.paidBy,
+			from: expense.from,
 		}
 	},
 
 	cancelEditExpense() {
 		this.editingExpenseIndex = -1
-		this.editingExpenseData = { description: '', amount: 0, paidBy: '' }
+		this.editingExpenseData = { description: '', amount: 0, from: '' }
 	},
 
 	updateExpense(index: number) {
@@ -193,15 +182,15 @@ export const expensesApp = () => ({
 
 		const description = this.editingExpenseData.description.trim()
 		const amount = Number(this.editingExpenseData.amount)
-		const paidBy = this.editingExpenseData.paidBy
+		const from = this.editingExpenseData.from
 
-		if (!description || !paidBy || !Number.isFinite(amount) || amount <= 0) {
+		if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
 			return
 		}
 
 		expense.description = description
 		expense.amount = amount
-		expense.paidBy = paidBy
+		expense.from = from
 
 		this.cancelEditExpense()
 		this.saveState()
