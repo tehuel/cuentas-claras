@@ -8,7 +8,7 @@ export const expensesApp = () => ({
 	members: [] as string[],
 	editingMemberIndex: -1,
 	editingMemberName: '',
-	showMemberForm: true,
+	showMemberForm: false,
 
 	// expenses
     expenseDescription: '',
