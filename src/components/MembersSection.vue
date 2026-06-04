@@ -5,8 +5,32 @@ import { useExpensesStore } from '../stores/expenses'
 const store = useExpensesStore()
 const memberInput = ref<HTMLInputElement | null>(null)
 
+const isMembersEmpty = () => store.members.length === 0;
+
+const showMemberForm = ref(false)
+const memberName = ref('')
+
+const showAddMemberForm = () => {
+	showMemberForm.value = true
+}
+
+const cancelAddMemberForm = () => {
+	showMemberForm.value = false
+	memberName.value = ''
+}
+
+const addMember = () => {
+	const success = store.addMember(memberName.value)
+	if (success) {
+		memberName.value = ''
+		showMemberForm.value = false
+	} else {
+		memberName.value = ''
+	}
+}
+
 watch(
-	() => store.showMemberForm,
+	showMemberForm,
 	async (isVisible) => {
 		if (!isVisible) return
 		await nextTick()
@@ -20,30 +44,30 @@ watch(
 		<div class="card-header">
 			<div class="d-flex justify-content-between align-items-center">
 				<h2 class="h4 m-0">Participantes</h2>
-				<button type="button" class="btn btn-sm btn-primary m-0" @click="store.showAddMemberForm()" v-show="!store.showMemberForm">
+				<button type="button" class="btn btn-sm btn-primary m-0" @click="showAddMemberForm()" v-show="!showMemberForm">
 					<i class="bi bi-plus-lg"></i> Participante
 				</button>
 			</div>
 
-			<div v-show="store.showMemberForm" class="mt-3">
-				<form class="row g-2" @submit.prevent="store.addMember" @keydown.esc.prevent="store.cancelAddMemberForm()">
+			<div v-show="showMemberForm" class="mt-3">
+				<form class="row g-2" @submit.prevent="addMember" @keydown.esc.prevent="cancelAddMemberForm()">
 					<div class="col-12">
 						<label class="form-label w-100">
 							Nombre
-							<input ref="memberInput" v-model="store.memberName" type="text" class="form-control form-control-sm" />
+							<input ref="memberInput" v-model="memberName" type="text" class="form-control form-control-sm" />
 						</label>
 					</div>
 					<div class="col-12 d-flex justify-content-end">
 						<div class="d-flex gap-1">
 							<button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
-							<button type="button" class="btn btn-sm btn-secondary" @click="store.cancelAddMemberForm()"><i class="bi bi-x-lg"></i></button>
+							<button type="button" class="btn btn-sm btn-secondary" @click="cancelAddMemberForm()"><i class="bi bi-x-lg"></i></button>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
 
-		<div v-if="store.members.length === 0" class="p-3 text-secondary text-center">
+		<div v-if="isMembersEmpty()" class="p-3 text-secondary text-center">
 			No hay participantes todavía.
 		</div>
 

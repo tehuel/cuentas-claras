@@ -11,11 +11,9 @@ type PaymentDraft = {
 
 export const useExpensesStore = defineStore('expenses', {
 	state: () => ({
-		memberName: '',
 		members: [] as string[],
 		editingMemberIndex: -1,
 		editingMemberName: '',
-		showMemberForm: false,
 
 		expenseDescription: '',
 		expenseAmount: '',
@@ -46,33 +44,23 @@ export const useExpensesStore = defineStore('expenses', {
 	},
 
 	actions: {
-		showAddMemberForm() {
-			this.showMemberForm = true
-		},
-
-		cancelAddMemberForm() {
-			this.showMemberForm = false
-			this.memberName = ''
-		},
-
-		addMember() {
-			const name = this.memberName.trim()
-			if (!name || this.members.includes(name)) {
-				this.memberName = ''
-				return
+		addMember(name: string): boolean {
+			const trimmedName = name.trim()
+			if (!trimmedName || this.members.includes(trimmedName)) {
+				return false
 			}
 
-			this.members.push(name)
+			this.members.push(trimmedName)
 
+			// New members are now participants in all existing expenses
 			this.expenses.forEach((expense) => {
-				if (!expense.participants.includes(name)) {
-					expense.participants.push(name)
+				if (!expense.participants.includes(trimmedName)) {
+					expense.participants.push(trimmedName)
 				}
 			})
 
-			this.memberName = ''
-			this.showMemberForm = false
 			this.saveState()
+			return true
 		},
 
 		removeMember(index: number) {
