@@ -4,11 +4,13 @@ import { useExpensesStore } from '../stores/expenses'
 
 const store = useExpensesStore()
 const memberInput = ref<HTMLInputElement | null>(null)
-
-const isMembersEmpty = () => store.members.length === 0;
+const editInput = ref<HTMLInputElement | null>(null)
 
 const showMemberForm = ref(false)
 const memberName = ref('')
+
+const editingIndex = ref(-1)
+const editingName = ref('')
 
 const showAddMemberForm = () => {
 	showMemberForm.value = true
@@ -29,12 +31,49 @@ const addMember = () => {
 	}
 }
 
+const startEditMember = (index: number) => {
+	editingIndex.value = index
+	editingName.value = store.members[index] || ''
+}
+
+const cancelEditMember = () => {
+	editingIndex.value = -1
+	editingName.value = ''
+}
+
+const updateMember = (index: number) => {
+	const success = store.updateMember(index, editingName.value)
+	if (success) {
+		cancelEditMember()
+	}
+}
+
+const removeMember = (index: number) => {
+	if (editingIndex.value === index) {
+		cancelEditMember()
+	}
+	store.removeMember(index)
+}
+
+const setEditInput = (el: any) => {
+	editInput.value = el
+}
+
 watch(
 	showMemberForm,
 	async (isVisible) => {
 		if (!isVisible) return
 		await nextTick()
 		memberInput.value?.focus()
+	},
+)
+
+watch(
+	editingIndex,
+	async (index) => {
+		if (index === -1) return
+		await nextTick()
+		editInput.value?.focus()
 	},
 )
 </script>
@@ -67,18 +106,18 @@ watch(
 			</div>
 		</div>
 
-		<div v-if="isMembersEmpty()" class="p-3 text-secondary text-center">
+		<div v-if="store.members.length === 0" class="p-3 text-secondary text-center">
 			No hay participantes todavía.
 		</div>
 
 		<ul v-else class="list-group list-group-flush border-top-0">
 			<li v-for="(member, index) in store.members" :key="member" class="list-group-item d-flex align-items-center justify-content-between gap-2">
-				<template v-if="store.editingMemberIndex === index">
-					<form class="d-flex gap-2 w-100" @submit.prevent="store.updateMember(index)" @keydown.esc.prevent="store.cancelEditMember()">
-						<input v-model="store.editingMemberName" type="text" class="form-control form-control-sm flex-grow-1" />
+				<template v-if="editingIndex === index">
+					<form class="d-flex gap-2 w-100" @submit.prevent="updateMember(index)" @keydown.esc.prevent="cancelEditMember()">
+						<input :ref="setEditInput" v-model="editingName" type="text" class="form-control form-control-sm flex-grow-1" />
 						<div class="d-flex gap-1">
 							<button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
-							<button type="button" class="btn btn-sm btn-secondary" @click="store.cancelEditMember()"><i class="bi bi-x-lg"></i></button>
+							<button type="button" class="btn btn-sm btn-secondary" @click="cancelEditMember()"><i class="bi bi-x-lg"></i></button>
 						</div>
 					</form>
 				</template>
@@ -86,8 +125,8 @@ watch(
 					<div class="d-flex gap-2 w-100 align-items-center justify-content-between">
 						<span>{{ member }}</span>
 						<div class="d-flex gap-1 justify-content-end">
-							<button type="button" class="btn btn-sm btn-outline-secondary" @click="store.startEditMember(index)"><i class="bi bi-pencil-fill"></i></button>
-							<button type="button" class="btn btn-sm btn-outline-danger" @click="store.removeMember(index)"><i class="bi bi-trash2-fill"></i></button>
+							<button type="button" class="btn btn-sm btn-outline-secondary" @click="startEditMember(index)"><i class="bi bi-pencil-fill"></i></button>
+							<button type="button" class="btn btn-sm btn-outline-danger" @click="removeMember(index)"><i class="bi bi-trash2-fill"></i></button>
 						</div>
 					</div>
 				</template>

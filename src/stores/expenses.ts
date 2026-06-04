@@ -12,8 +12,6 @@ type PaymentDraft = {
 export const useExpensesStore = defineStore('expenses', {
 	state: () => ({
 		members: [] as string[],
-		editingMemberIndex: -1,
-		editingMemberName: '',
 
 		expenseDescription: '',
 		expenseAmount: '',
@@ -67,10 +65,6 @@ export const useExpensesStore = defineStore('expenses', {
 			const memberToRemove = this.members[index]
 			if (!memberToRemove) return
 
-			if (this.editingMemberIndex === index) {
-				this.cancelEditMember()
-			}
-
 			this.members.splice(index, 1)
 
 			this.expenses.forEach((expense) => {
@@ -98,57 +92,45 @@ export const useExpensesStore = defineStore('expenses', {
 			this.saveState()
 		},
 
-		startEditMember(index: number) {
-			this.editingMemberIndex = index
-			this.editingMemberName = this.members[index] || ''
-		},
-
-		cancelEditMember() {
-			this.editingMemberIndex = -1
-			this.editingMemberName = ''
-		},
-
-		updateMember(index: number) {
+		updateMember(index: number, newName: string): boolean {
 			const oldName = this.members[index]
-			const newName = this.editingMemberName.trim()
+			const trimmedNewName = newName.trim()
 
-			if (!newName || newName === oldName) {
-				this.cancelEditMember()
-				return
+			if (!trimmedNewName || trimmedNewName === oldName) {
+				return false
 			}
 
-			if (this.members.includes(newName)) {
-				this.cancelEditMember()
-				return
+			if (this.members.includes(trimmedNewName)) {
+				return false
 			}
 
-			this.members[index] = newName
+			this.members[index] = trimmedNewName
 
 			this.expenses.forEach((expense) => {
 				if (expense.from === oldName) {
-					expense.from = newName
+					expense.from = trimmedNewName
 				}
 
 				const participantIndex = expense.participants.indexOf(oldName)
 				if (participantIndex > -1) {
-					expense.participants[participantIndex] = newName
+					expense.participants[participantIndex] = trimmedNewName
 				}
 			})
 
 			if (this.expenseFrom === oldName) {
-				this.expenseFrom = newName
+				this.expenseFrom = trimmedNewName
 			}
 
 			if (this.paymentFrom === oldName) {
-				this.paymentFrom = newName
+				this.paymentFrom = trimmedNewName
 			}
 
 			if (this.paymentTo === oldName) {
-				this.paymentTo = newName
+				this.paymentTo = trimmedNewName
 			}
 
-			this.cancelEditMember()
 			this.saveState()
+			return true
 		},
 
 		showAddExpenseForm() {
