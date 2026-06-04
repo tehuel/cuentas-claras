@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useVueStatusStore } from './stores/vueStatus'
 
-const clicks = ref(0)
+const store = useVueStatusStore()
 
-const labels = computed(() => ['Vue configurado', 'SFC activo', 'Montado en la página'])
+const labels = computed(() => store.labels)
 </script>
 
 <template>
@@ -17,10 +18,10 @@ const labels = computed(() => ['Vue configurado', 'SFC activo', 'Montado en la p
 				</p>
 			</div>
 			<div class="text-md-end">
-				<button type="button" class="btn btn-info text-white mb-2" @click="clicks += 1">
+				<button type="button" class="btn btn-info text-white mb-2" @click="store.increment()">
 					Probar reactividad
 				</button>
-				<div class="fw-semibold">{{ clicks }} clics</div>
+				<div class="fw-semibold">{{ store.clicks }} clics</div>
 				<div class="small text-secondary">{{ labels.join(' · ') }}</div>
 			</div>
 		</div>
