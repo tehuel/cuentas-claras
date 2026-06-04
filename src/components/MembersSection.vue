@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
-import AddMemberForm from './AddMemberForm.vue'
+import MemberAddForm from './MemberAddForm.vue'
 import MemberListItem from './MemberListItem.vue'
 
 const store = useExpensesStore()
@@ -26,7 +26,7 @@ const closeAddMemberForm = () => {
 				</button>
 			</div>
 
-			<AddMemberForm v-if="isAddMemberFormVisible" @close="closeAddMemberForm" />
+			<MemberAddForm v-if="isAddMemberFormVisible" @close="closeAddMemberForm" />
 		</div>
 
 		<div v-if="store.members.length === 0" class="p-3 text-secondary text-center">
