@@ -17,15 +17,11 @@ onMounted(() => {
 const addMember = () => {
 	const success = store.addMember(memberName.value)
 	if (success) {
-		memberName.value = ''
-		emit('close')
-	} else {
-		memberName.value = ''
-	}
+    emit('close')
+  }
 }
 
 const cancelAddMemberForm = () => {
-	memberName.value = ''
 	emit('close')
 }
 </script>
