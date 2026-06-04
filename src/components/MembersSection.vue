@@ -5,14 +5,14 @@ import AddMemberForm from './AddMemberForm.vue'
 import MemberListItem from './MemberListItem.vue'
 
 const store = useExpensesStore()
-const showMemberForm = ref(false)
+const isAddMemberFormVisible = ref(false)
 
-const showAddMemberForm = () => {
-	showMemberForm.value = true
+const openAddMemberForm = () => {
+	isAddMemberFormVisible.value = true
 }
 
 const closeAddMemberForm = () => {
-	showMemberForm.value = false
+	isAddMemberFormVisible.value = false
 }
 </script>
 
@@ -21,12 +21,12 @@ const closeAddMemberForm = () => {
 		<div class="card-header">
 			<div class="d-flex justify-content-between align-items-center">
 				<h2 class="h4 m-0">Participantes</h2>
-				<button type="button" class="btn btn-sm btn-primary m-0" @click="showAddMemberForm" v-show="!showMemberForm">
+				<button type="button" class="btn btn-sm btn-primary m-0" @click="openAddMemberForm" v-show="!isAddMemberFormVisible">
 					<i class="bi bi-plus-lg"></i> Participante
 				</button>
 			</div>
 
-			<AddMemberForm v-if="showMemberForm" @close="closeAddMemberForm" />
+			<AddMemberForm v-if="isAddMemberFormVisible" @close="closeAddMemberForm" />
 		</div>
 
 		<div v-if="store.members.length === 0" class="p-3 text-secondary text-center">
