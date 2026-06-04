@@ -1,6 +1,12 @@
-import { calculateBalance, type Transaction, type Transfer } from './calculator'
+import { calculateBalance, type Payment, type Transaction, type Transfer } from './calculator'
 
 type Expense = Transaction & { description: string }
+type PaymentDraft = {
+	amount: number,
+	from: string,
+	to: string,
+	note: string,
+}
 
 export const expensesApp = () => ({
     // members
@@ -19,12 +25,22 @@ export const expensesApp = () => ({
 	editingExpenseData: { description: '', amount: 0, from: '' } as Omit<Expense, 'participants'>,
 	showExpenseForm: false,
 
+	// payments
+	paymentAmount: '',
+	paymentFrom: '',
+	paymentTo: '',
+	paymentNote: '',
+	payments: [] as Payment[],
+	editingPaymentIndex: -1,
+	editingPaymentData: { amount: 0, from: '', to: '', note: '' } as PaymentDraft,
+	showPaymentForm: false,
+
 	get transfers(): Transfer[] {
 		if (this.members.length === 0 || this.expenses.length === 0) {
 			return []
 		}
 
-		return calculateBalance(this.expenses)
+		return calculateBalance(this.expenses, this.payments)
 	},
 
 	showAddMemberForm() {
@@ -163,6 +179,84 @@ export const expensesApp = () => ({
 		this.saveState()
 	},
 
+	showAddPaymentForm() {
+		this.showPaymentForm = true
+	},
+
+	cancelAddPaymentForm() {
+		this.showPaymentForm = false
+		this.paymentAmount = ''
+		this.paymentFrom = ''
+		this.paymentTo = ''
+		this.paymentNote = ''
+	},
+
+	addPayment() {
+		const amount = Number(this.paymentAmount)
+		const from = this.paymentFrom
+		const to = this.paymentTo
+		const note = this.paymentNote.trim()
+
+		if (!from || !to || from === to || !Number.isFinite(amount) || amount <= 0) {
+			return
+		}
+
+		this.payments.unshift({
+			amount,
+			from,
+			to,
+			note: note || undefined,
+		})
+
+		this.cancelAddPaymentForm()
+		this.saveState()
+	},
+
+	removePayment(index: number) {
+		this.payments.splice(index, 1)
+		this.saveState()
+	},
+
+	startEditPayment(index: number) {
+		const payment = this.payments[index]
+		if (!payment) return
+
+		this.editingPaymentIndex = index
+		this.editingPaymentData = {
+			amount: payment.amount,
+			from: payment.from,
+			to: payment.to,
+			note: payment.note || '',
+		}
+	},
+
+	cancelEditPayment() {
+		this.editingPaymentIndex = -1
+		this.editingPaymentData = { amount: 0, from: '', to: '', note: '' }
+	},
+
+	updatePayment(index: number) {
+		const payment = this.payments[index]
+		if (!payment) return
+
+		const amount = Number(this.editingPaymentData.amount)
+		const from = this.editingPaymentData.from
+		const to = this.editingPaymentData.to
+		const note = this.editingPaymentData.note.trim()
+
+		if (!from || !to || from === to || !Number.isFinite(amount) || amount <= 0) {
+			return
+		}
+
+		payment.amount = amount
+		payment.from = from
+		payment.to = to
+		payment.note = note || undefined
+
+		this.cancelEditPayment()
+		this.saveState()
+	},
+
 	toggleParticipant(expenseIndex: number, member: string) {
 		const expense = this.expenses[expenseIndex]
 		if (!expense) return
@@ -223,6 +317,7 @@ export const expensesApp = () => ({
 		const state = {
 			members: this.members,
 			expenses: this.expenses,
+			payments: this.payments,
 		}
 		localStorage.setItem('expensesAppState', JSON.stringify(state))
 	},
@@ -238,6 +333,9 @@ export const expensesApp = () => ({
 			}
 			if (Array.isArray(state.expenses)) {
 				this.expenses = state.expenses
+			}
+			if (Array.isArray(state.payments)) {
+				this.payments = state.payments
 			}
 		} catch (e) {
 			console.error('Failed to load state from localStorage:', e)
