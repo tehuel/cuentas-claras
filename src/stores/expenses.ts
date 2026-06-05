@@ -37,6 +37,7 @@ export const useExpensesStore = defineStore('expenses', {
 	},
 
 	actions: {
+		// members
 		addMember(name: string): boolean {
 			const trimmedName = name.trim()
 			if (!trimmedName || this.members.includes(trimmedName)) {
@@ -120,6 +121,7 @@ export const useExpensesStore = defineStore('expenses', {
 			return true
 		},
 
+		// expenses
 		addExpense(expense: Expense) {
 			const trimmedDescription = expense.description?.trim() || ''
 			if(!trimmedDescription || !expense.from || expense.amount <= 0) {
@@ -137,6 +139,67 @@ export const useExpensesStore = defineStore('expenses', {
 			return true
 		},
 
+		removeExpense(index: number) {
+			if (this.editingExpenseIndex === index) {
+				this.cancelEditExpense()
+			}
+
+			this.expenses.splice(index, 1)
+			this.saveState()
+		},
+
+		startEditExpense(index: number) {
+			const expense = this.expenses[index]
+			if (!expense) return
+
+			this.editingExpenseIndex = index
+			this.editingExpenseData = {
+				description: expense.description,
+				amount: expense.amount,
+				from: expense.from,
+			}
+		},
+
+		cancelEditExpense() {
+			this.editingExpenseIndex = -1
+			this.editingExpenseData = { description: '', amount: 0, from: '' }
+		},
+
+		updateExpense(index: number) {
+			const expense = this.expenses[index]
+			if (!expense) return
+
+			const description = this.editingExpenseData.description.trim()
+			const amount = Number(this.editingExpenseData.amount)
+			const from = this.editingExpenseData.from
+
+			if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
+				return
+			}
+
+			expense.description = description
+			expense.amount = amount
+			expense.from = from
+
+			this.cancelEditExpense()
+			this.saveState()
+		},
+
+		toggleParticipant(expenseIndex: number, member: string) {
+			const expense = this.expenses[expenseIndex]
+			if (!expense) return
+
+			const index = expense.participants.indexOf(member)
+			if (index > -1) {
+				expense.participants.splice(index, 1)
+			} else {
+				expense.participants.push(member)
+			}
+
+			this.saveState()
+		},
+
+		// payments
 		showAddPaymentForm() {
 			this.showPaymentForm = true
 		},
@@ -219,66 +282,7 @@ export const useExpensesStore = defineStore('expenses', {
 			this.saveState()
 		},
 
-		toggleParticipant(expenseIndex: number, member: string) {
-			const expense = this.expenses[expenseIndex]
-			if (!expense) return
-
-			const index = expense.participants.indexOf(member)
-			if (index > -1) {
-				expense.participants.splice(index, 1)
-			} else {
-				expense.participants.push(member)
-			}
-
-			this.saveState()
-		},
-
-		removeExpense(index: number) {
-			if (this.editingExpenseIndex === index) {
-				this.cancelEditExpense()
-			}
-
-			this.expenses.splice(index, 1)
-			this.saveState()
-		},
-
-		startEditExpense(index: number) {
-			const expense = this.expenses[index]
-			if (!expense) return
-
-			this.editingExpenseIndex = index
-			this.editingExpenseData = {
-				description: expense.description,
-				amount: expense.amount,
-				from: expense.from,
-			}
-		},
-
-		cancelEditExpense() {
-			this.editingExpenseIndex = -1
-			this.editingExpenseData = { description: '', amount: 0, from: '' }
-		},
-
-		updateExpense(index: number) {
-			const expense = this.expenses[index]
-			if (!expense) return
-
-			const description = this.editingExpenseData.description.trim()
-			const amount = Number(this.editingExpenseData.amount)
-			const from = this.editingExpenseData.from
-
-			if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
-				return
-			}
-
-			expense.description = description
-			expense.amount = amount
-			expense.from = from
-
-			this.cancelEditExpense()
-			this.saveState()
-		},
-
+		// app state
 		saveState() {
 			const state = {
 				members: this.members,
