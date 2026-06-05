@@ -60,10 +60,10 @@ watch(isEditing, async (editing) => {
           <div class="col-12 col-sm-4">
             <label class="form-label w-100 m-0">
               Monto
-              <div class="input-group input-group-sm">
+              <span class="input-group input-group-sm">
                 <span class="input-group-text">$</span>
                 <input ref="amountInput" v-model.number="editingAmount" type="number" class="form-control" min="0" step="1" placeholder="Monto" />
-              </div>
+              </span>
             </label>
           </div>
           <div class="col-12 col-sm-4">
