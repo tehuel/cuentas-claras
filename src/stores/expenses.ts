@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { calculateBalance, type Payment, type Transaction, type Transfer } from '../calculator'
 
-type Expense = Transaction & { description: string }
+export type Expense = Transaction & { description: string }
 
 type PaymentDraft = {
 	amount: number,
@@ -15,9 +15,6 @@ export const useExpensesStore = defineStore('expenses', {
 		members: [] as string[],
 
 		expenses: [] as Expense[],
-		editingExpenseIndex: -1,
-		editingExpenseData: { description: '', amount: 0, from: '' } as Omit<Expense, 'participants'>,
-		showExpenseForm: false,
 
 		paymentAmount: '',
 		paymentFrom: '',
