@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { calculateBalance, type Payment, type Transaction, type Transfer } from '../calculator'
 
 type Expense = Transaction & { description: string }
+
 type PaymentDraft = {
 	amount: number,
 	from: string,
@@ -13,9 +14,6 @@ export const useExpensesStore = defineStore('expenses', {
 	state: () => ({
 		members: [] as string[],
 
-		expenseDescription: '',
-		expenseAmount: '',
-		expenseFrom: '',
 		expenses: [] as Expense[],
 		editingExpenseIndex: -1,
 		editingExpenseData: { description: '', amount: 0, from: '' } as Omit<Expense, 'participants'>,
@@ -77,10 +75,6 @@ export const useExpensesStore = defineStore('expenses', {
 				}
 			})
 
-			if (this.expenseFrom === memberToRemove) {
-				this.expenseFrom = this.members[0] || ''
-			}
-
 			if (this.paymentFrom === memberToRemove) {
 				this.paymentFrom = ''
 			}
@@ -117,10 +111,6 @@ export const useExpensesStore = defineStore('expenses', {
 				}
 			})
 
-			if (this.expenseFrom === oldName) {
-				this.expenseFrom = trimmedNewName
-			}
-
 			if (this.paymentFrom === oldName) {
 				this.paymentFrom = trimmedNewName
 			}
@@ -133,36 +123,21 @@ export const useExpensesStore = defineStore('expenses', {
 			return true
 		},
 
-		showAddExpenseForm() {
-			this.showExpenseForm = true
-		},
-
-		cancelAddExpenseForm() {
-			this.showExpenseForm = false
-			this.expenseDescription = ''
-			this.expenseAmount = ''
-		},
-
-		addExpense() {
-			const description = this.expenseDescription.trim()
-			const amount = Number(this.expenseAmount)
-			const from = this.expenseFrom
-
-			if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
-				return
+		addExpense(expense: Expense) {
+			const trimmedDescription = expense.description?.trim() || ''
+			if(!trimmedDescription || !expense.from || expense.amount <= 0) {
+				return false
 			}
 
 			this.expenses.unshift({
-				description,
-				amount,
-				from,
-				participants: [...this.members],
+				description: trimmedDescription,
+				amount: expense.amount,
+				from: expense.from,
+				participants: expense.participants,
 			})
 
-			this.expenseDescription = ''
-			this.expenseAmount = ''
-			this.showExpenseForm = false
 			this.saveState()
+			return true
 		},
 
 		showAddPaymentForm() {
@@ -338,9 +313,6 @@ export const useExpensesStore = defineStore('expenses', {
 
 		init() {
 			this.loadState()
-			if (this.members.length > 0) {
-				this.expenseFrom ||= this.members[0]
-			}
 		},
 	},
 })
