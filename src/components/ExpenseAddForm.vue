@@ -22,6 +22,7 @@ onMounted(() => {
 
 const addExpense = () => {
   const newExpense = {
+    id: Date.now().toString(),
     description: description.value,
     amount: amount.value,
     from: from.value,

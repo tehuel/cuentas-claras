@@ -4,7 +4,6 @@ import {nextTick, ref, watch} from "vue";
 
 const props = defineProps<{
   expense: Expense,
-  index: number,
 }>()
 
 const store = useExpensesStore()
@@ -13,16 +12,37 @@ const isEditing = ref(false)
 const amountInput = ref<HTMLInputElement | null>(null)
 const editingAmount = ref(0)
 const editingFrom = ref('')
-const editingDesc = ref('')
+const editingDescription = ref('')
 
 const startEdit = () => {
+  editingAmount.value = props.expense.amount
+  editingFrom.value = props.expense.from
+  editingDescription.value = props.expense.description
   isEditing.value = true
 }
+
 const cancelEdit = () => {
   isEditing.value = false
 }
-const updateExpense = () => {}
-const deleteExpense = () => {}
+
+const updateExpense = () => {
+  store.updateExpense({
+    id: props.expense.id,
+    amount: editingAmount.value,
+    from: editingFrom.value,
+    description: editingDescription.value,
+    participants: props.expense.participants,
+  })
+  isEditing.value = false
+}
+
+const toggleParticipant = (member: string) => {
+  store.toggleParticipant(props.expense.id, member)
+}
+
+const deleteExpense = () => {
+  store.removeExpense(props.expense.id)
+}
 
 watch(isEditing, async (editing) => {
   if (editing) {
@@ -57,7 +77,7 @@ watch(isEditing, async (editing) => {
           <div class="col-12 col-sm-4">
             <label class="form-label w-100 m-0">
               Descripción
-              <input v-model="editingDesc" type="text" class="form-control form-control-sm" placeholder="Descripción" />
+              <input v-model="editingDescription" type="text" class="form-control form-control-sm" placeholder="Descripción" />
             </label>
           </div>
           <div class="col-12 d-flex justify-content-end">
@@ -87,8 +107,8 @@ watch(isEditing, async (editing) => {
         <div class="d-flex flex-wrap gap-3 p-2 bg-secondary-subtle rounded">
           <span>Compartir entre</span>
           <div v-for="member in store.members" :key="member" class="form-check d-flex align-items-center gap-2">
-            <input :id="`member-${index}-${member}`" class="form-check-input" type="checkbox" :checked="expense.participants.includes(member)" @change="store.toggleParticipant(index, member)" />
-            <label class="form-check-label mb-0" :for="`member-${index}-${member}`">{{ member }}</label>
+            <input :id="`member-${expense.id}-${member}`" class="form-check-input" type="checkbox" :checked="expense.participants.includes(member)" @change="() => {toggleParticipant(member)}" />
+            <label class="form-check-label mb-0" :for="`member-${expense.id}-${member}`">{{ member }}</label>
           </div>
         </div>
       </template>

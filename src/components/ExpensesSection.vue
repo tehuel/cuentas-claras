@@ -35,10 +35,9 @@ const closeAddExpenseForm = () => {
 
 		<ul v-else class="list-group list-group-flush border-top-0">
       <ExpenseListItem
-        v-for="(expense, index) in store.expenses"
-        :key="JSON.stringify(expense)"
+        v-for="expense in store.expenses"
+        :key="expense.id"
         :expense="expense"
-        :index="index"
       />
 		</ul>
 	</section>

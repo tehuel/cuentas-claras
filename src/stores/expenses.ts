@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia'
-import { calculateBalance, type Payment, type Transaction, type Transfer } from '../calculator'
+import { calculateBalance, type Payment, type Transfer } from '../calculator'
 
-export type Expense = Transaction & { description: string }
+export type Expense = {
+	id: string,
+	amount: number,
+	from: string,
+	participants: string[],
+	description: string,
+}
 
 type PaymentDraft = {
 	amount: number,
@@ -129,71 +135,37 @@ export const useExpensesStore = defineStore('expenses', {
 			}
 
 			this.expenses.unshift({
+				...expense,
 				description: trimmedDescription,
-				amount: expense.amount,
-				from: expense.from,
-				participants: expense.participants,
 			})
 
 			this.saveState()
 			return true
 		},
 
-		removeExpense(index: number) {
-			if (this.editingExpenseIndex === index) {
-				this.cancelEditExpense()
-			}
-
-			this.expenses.splice(index, 1)
+		removeExpense(id: string) {
+			const expenseIndex = this.expenses.findIndex(expense => expense.id === id)
+			this.expenses.splice(expenseIndex, 1)
 			this.saveState()
 		},
 
-		startEditExpense(index: number) {
-			const expense = this.expenses[index]
-			if (!expense) return
+		updateExpense(expense: Expense) {
+			const oldExpenseIndex = this.expenses.findIndex(oldExpense => oldExpense.id === expense.id)
+			if (oldExpenseIndex === -1) return
 
-			this.editingExpenseIndex = index
-			this.editingExpenseData = {
-				description: expense.description,
-				amount: expense.amount,
-				from: expense.from,
-			}
-		},
-
-		cancelEditExpense() {
-			this.editingExpenseIndex = -1
-			this.editingExpenseData = { description: '', amount: 0, from: '' }
-		},
-
-		updateExpense(index: number) {
-			const expense = this.expenses[index]
-			if (!expense) return
-
-			const description = this.editingExpenseData.description.trim()
-			const amount = Number(this.editingExpenseData.amount)
-			const from = this.editingExpenseData.from
-
-			if (!description || !from || !Number.isFinite(amount) || amount <= 0) {
-				return
-			}
-
-			expense.description = description
-			expense.amount = amount
-			expense.from = from
-
-			this.cancelEditExpense()
+			this.expenses.splice(oldExpenseIndex, 1, expense)
 			this.saveState()
 		},
 
-		toggleParticipant(expenseIndex: number, member: string) {
-			const expense = this.expenses[expenseIndex]
+		toggleParticipant(expenseId: string, participantName: string) {
+			const expense = this.expenses.find((expense) => expense.id === expenseId)
 			if (!expense) return
 
-			const index = expense.participants.indexOf(member)
-			if (index > -1) {
-				expense.participants.splice(index, 1)
+			const participantIndex = expense.participants.indexOf(participantName)
+			if (participantIndex > -1) {
+				expense.participants.splice(participantIndex, 1)
 			} else {
-				expense.participants.push(member)
+				expense.participants.push(participantName)
 			}
 
 			this.saveState()
