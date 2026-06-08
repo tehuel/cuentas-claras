@@ -1,46 +1,135 @@
 <script setup lang="ts">
+import {type Payment, useExpensesStore} from "../stores/expenses.ts";
+import {nextTick, ref, watch} from "vue";
 
+const props = defineProps<{
+  payment: Payment,
+}>()
+
+const store = useExpensesStore()
+
+const isEditing = ref(false)
+const amount = ref(0)
+const from = ref('')
+const to = ref('')
+const description = ref('')
+
+const amountInput = ref<HTMLInputElement | null>(null)
+watch(isEditing, async (editing) => {
+  if (editing) {
+    await nextTick()
+    amountInput.value?.focus()
+  }
+})
+
+const startEdit = () => {
+  amount.value = props.payment.amount
+  from.value = props.payment.from
+  to.value = props.payment.to
+  description.value = props.payment.description
+  isEditing.value = true
+}
+
+const cancelEdit = () => {
+  isEditing.value = false
+}
+
+const updatePayment = () => {
+  store.updatePayment({
+    id: props.payment.id,
+    amount: amount.value,
+    from: from.value,
+    to: to.value,
+    description: description.value,
+  })
+  isEditing.value = false
+}
+
+const deletePayment = () => {
+  store.removePayment(props.payment.id)
+}
 </script>
 
 <template>
-  <li v-for="(payment, index) in store.payments" :key="index" class="list-group-item d-flex justify-content-between align-items-center gap-3">
-    <template v-if="store.editingPaymentIndex === index">
-      <form class="row g-2 w-100 align-items-end" @submit.prevent="store.updatePayment(index)" @keydown.esc.prevent="store.cancelEditPayment()">
+  <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+    <template v-if="isEditing">
+      <form
+        class="row g-2 w-100 align-items-end"
+        @submit.prevent="updatePayment"
+        @keydown.esc.prevent="cancelEdit"
+      >
         <div class="col-12 col-sm-3">
           <label class="form-label w-100 m-0">
             Monto
             <div class="input-group input-group-sm">
               <span class="input-group-text">$</span>
-              <input v-model.number="store.editingPaymentData.amount" type="number" class="form-control" min="0" step="0.01" placeholder="Monto" />
+              <input
+                v-model.number="amount"
+                type="number"
+                class="form-control"
+                min="0"
+                step="1"
+                placeholder="Monto"
+              >
             </div>
           </label>
         </div>
         <div class="col-12 col-sm-3">
           <label class="form-label w-100 m-0">
             Pagó
-            <select v-model="store.editingPaymentData.from" class="form-select form-select-sm">
-              <option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
+            <select
+              v-model="from"
+              class="form-select form-select-sm"
+            >
+              <option
+                v-for="member in store.members"
+                :key="member"
+                :value="member"
+              >{{ member }}</option>
             </select>
           </label>
         </div>
         <div class="col-12 col-sm-3">
           <label class="form-label w-100 m-0">
             A
-            <select v-model="store.editingPaymentData.to" class="form-select form-select-sm">
-              <option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
+            <select
+              v-model="to"
+              class="form-select form-select-sm"
+            >
+              <option
+                v-for="member in store.members"
+                :key="member"
+                :value="member"
+              >{{ member }}</option>
             </select>
           </label>
         </div>
         <div class="col-12 col-sm-3">
           <label class="form-label w-100 m-0">
             Nota
-            <input v-model="store.editingPaymentData.note" type="text" class="form-control form-control-sm" placeholder="Opcional" />
+            <input
+              v-model="description"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Opcional"
+            >
           </label>
         </div>
         <div class="col-12 d-flex justify-content-end">
           <div class="d-flex gap-1">
-            <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
-            <button type="button" class="btn btn-sm btn-secondary" @click="store.cancelEditPayment()"><i class="bi bi-x-lg"></i></button>
+            <button
+              type="submit"
+              class="btn btn-sm btn-success"
+            >
+              <i class="bi bi-check-lg" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="cancelEdit"
+            >
+              <i class="bi bi-x-lg" />
+            </button>
           </div>
         </div>
       </form>
@@ -52,19 +141,30 @@
           <span class="fw-semibold">{{ payment.from }}</span>
           le paga a
           <span class="fw-semibold">{{ payment.to }}</span>
-          <span v-if="payment.note" class="text-secondary">· {{ payment.note }}</span>
+          <span
+            v-if="payment.description"
+            class="text-secondary"
+          >· {{ payment.description }}</span>
         </div>
 
         <div class="d-flex align-items-center gap-2">
           <span class="badge text-bg-success">$ {{ payment.amount.toFixed(2) }}</span>
-          <button type="button" class="btn btn-sm btn-outline-secondary" @click="store.startEditPayment(index)"><i class="bi bi-pencil-fill"></i></button>
-          <button type="button" class="btn btn-sm btn-outline-danger" @click="store.removePayment(index)"><i class="bi bi-trash2-fill"></i></button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            @click="startEdit"
+          >
+            <i class="bi bi-pencil-fill" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            @click="deletePayment"
+          >
+            <i class="bi bi-trash2-fill" />
+          </button>
         </div>
       </div>
     </template>
   </li>
 </template>
-
-<style scoped>
-
-</style>
