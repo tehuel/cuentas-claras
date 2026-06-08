@@ -8,8 +8,8 @@ const emit = defineEmits<{
 
 const store = useExpensesStore()
 const memberName = ref('')
-const memberInput = ref<HTMLInputElement | null>(null)
 
+const memberInput = ref<HTMLInputElement | null>(null)
 onMounted(() => {
 	memberInput.value?.focus()
 })

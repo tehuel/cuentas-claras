@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {useExpensesStore} from "../stores/expenses.ts";
+import {type Payment, useExpensesStore} from "../stores/expenses.ts";
 import {onMounted, ref} from "vue";
-import type {Payment} from "../calculator.ts";
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -15,17 +14,17 @@ const to = ref('')
 const description = ref('')
 
 const amountInput = ref<HTMLInputElement | null>(null)
-
 onMounted(() => {
   amountInput.value?.focus()
 })
 
 const addPayment = () => {
   const newPayment: Payment = {
+    id: Date.now().toString(),
     amount: amount.value,
     from: from.value,
     to: to.value,
-    note: description.value,
+    description: description.value,
   }
 
   const success = store.addPayment(newPayment)
@@ -34,14 +33,14 @@ const addPayment = () => {
   }
 }
 
-const cancelAddpayment = () => {
+const cancelAddPayment = () => {
   emit('close')
 }
 
 </script>
 
 <template>
-  <form class="row g-2" @submit.prevent="addPayment" @keydown.esc.prevent="cancelAddpayment">
+  <form class="row g-2" @submit.prevent="addPayment" @keydown.esc.prevent="cancelAddPayment">
     <div class="col-12 col-sm-3">
       <label class="form-label w-100 m-0">
         Monto
@@ -78,7 +77,7 @@ const cancelAddpayment = () => {
     <div class="col-12 d-flex justify-content-end">
       <div class="d-flex gap-1">
         <button type="submit" class="btn btn-sm btn-success" :disabled="store.members.length < 2"><i class="bi bi-check-lg"></i></button>
-        <button type="button" class="btn btn-sm btn-secondary" @click="cancelAddpayment"><i class="bi bi-x-lg"></i></button>
+        <button type="button" class="btn btn-sm btn-secondary" @click="cancelAddPayment"><i class="bi bi-x-lg"></i></button>
       </div>
     </div>
   </form>

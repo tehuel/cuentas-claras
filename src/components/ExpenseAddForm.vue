@@ -13,9 +13,6 @@ const from = ref('')
 const description = ref('')
 
 const amountInput = ref<HTMLInputElement | null>(null)
-const fromInput = ref<HTMLInputElement | null>(null)
-const descriptionInput = ref<HTMLInputElement | null>(null)
-
 onMounted(() => {
   amountInput.value?.focus()
 })
@@ -53,7 +50,7 @@ const cancelAddExpense = () => {
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
         Pagado por
-        <select ref="fromInput" v-model="from" class="form-select form-select-sm">
+        <select v-model="from" class="form-select form-select-sm">
           <option value="" disabled>Participante</option>
           <option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
         </select>
@@ -62,7 +59,7 @@ const cancelAddExpense = () => {
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
         Descripción
-        <input ref="descriptionInput" v-model="description" type="text" class="form-control form-control-sm"/>
+        <input v-model="description" type="text" class="form-control form-control-sm"/>
       </label>
     </div>
     <div class="col-12 d-flex justify-content-end">
