@@ -37,38 +37,71 @@ const cancelAddExpense = () => {
 </script>
 
 <template>
-  <form class="row g-2" @submit.prevent="addExpense" @keydown.esc.prevent="cancelAddExpense">
+  <form
+    class="row g-2"
+    @submit.prevent="addExpense"
+    @keydown.esc.prevent="cancelAddExpense"
+  >
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
         Monto
-        <div class="input-group input-group-sm">
+        <span class="input-group input-group-sm">
           <span class="input-group-text">$</span>
-          <input ref="amountInput" v-model="amount" type="number" class="form-control" min="0" step="1"/>
-        </div>
+          <input
+            ref="amountInput"
+            v-model="amount"
+            type="number"
+            class="form-control"
+            min="0"
+            step="1"
+          >
+        </span>
       </label>
     </div>
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
         Pagado por
-        <select v-model="from" class="form-select form-select-sm">
-          <option value="" disabled>Participante</option>
-          <option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
+        <select
+          v-model="from"
+          class="form-select form-select-sm"
+        >
+          <option
+            value=""
+            disabled
+          >Participante</option>
+          <option
+            v-for="member in store.members"
+            :key="member"
+            :value="member"
+          >{{ member }}</option>
         </select>
       </label>
     </div>
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
         Descripción
-        <input v-model="description" type="text" class="form-control form-control-sm"/>
+        <input
+          v-model="description"
+          type="text"
+          class="form-control form-control-sm"
+        >
       </label>
     </div>
     <div class="col-12 d-flex justify-content-end">
       <div class="d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-success" :disabled="store.members.length === 0">
-          <i class="bi bi-check-lg"></i>
+        <button
+          type="submit"
+          class="btn btn-sm btn-success"
+          :disabled="store.members.length === 0"
+        >
+          <i class="bi bi-check-lg" />
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" @click="cancelAddExpense">
-          <i class="bi bi-x-lg"></i>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary"
+          @click="cancelAddExpense"
+        >
+          <i class="bi bi-x-lg" />
         </button>
       </div>
     </div>

@@ -16,16 +16,16 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="d-flex flex-column min-vh-100">
-		<AppHeader />
+  <div class="d-flex flex-column min-vh-100">
+    <AppHeader />
 
-		<main class="container d-flex flex-column gap-4 my-4">
-			<MembersSection />
-			<ExpensesSection />
-			<PaymentsSection />
-			<TransfersSection />
-		</main>
+    <main class="container d-flex flex-column gap-4 my-4">
+      <MembersSection />
+      <ExpensesSection />
+      <PaymentsSection />
+      <TransfersSection />
+    </main>
 
-		<AppFooter />
-	</div>
+    <AppFooter />
+  </div>
 </template>

@@ -61,7 +61,7 @@ const deletePayment = () => {
         <div class="col-12 col-sm-3">
           <label class="form-label w-100 m-0">
             Monto
-            <div class="input-group input-group-sm">
+            <span class="input-group input-group-sm">
               <span class="input-group-text">$</span>
               <input
                 v-model.number="amount"
@@ -71,7 +71,7 @@ const deletePayment = () => {
                 step="1"
                 placeholder="Monto"
               >
-            </div>
+            </span>
           </label>
         </div>
         <div class="col-12 col-sm-3">

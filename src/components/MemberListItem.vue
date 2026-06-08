@@ -10,7 +10,7 @@ const props = defineProps<{
 const store = useExpensesStore()
 
 const isEditing = ref(false)
-const editingName = ref('')
+const name = ref('')
 
 const editInput = ref<HTMLInputElement | null>(null)
 watch(isEditing, async (editing) => {
@@ -21,26 +21,21 @@ watch(isEditing, async (editing) => {
 })
 
 const startEdit = () => {
-	editingName.value = props.member
+	name.value = props.member
 	isEditing.value = true
 }
 
 const cancelEdit = () => {
 	isEditing.value = false
-	editingName.value = ''
+	name.value = ''
 }
 
 const updateMember = () => {
-	const success = store.updateMember(props.index, editingName.value)
-	if (success) {
-		cancelEdit()
-	}
+	store.updateMember(props.index, name.value)
+  isEditing.value = false
 }
 
 const removeMember = () => {
-	if (isEditing.value) {
-		cancelEdit()
-	}
 	store.removeMember(props.index)
 }
 </script>
@@ -55,7 +50,7 @@ const removeMember = () => {
       >
         <input
           ref="editInput"
-          v-model="editingName"
+          v-model="name"
           type="text"
           class="form-control form-control-sm flex-grow-1"
         >

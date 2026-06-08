@@ -75,6 +75,7 @@ export const useExpensesStore = defineStore('expenses', {
 		},
 
 		updateMember(index: number, newName: string): boolean {
+			console.log('updateMember ', index, newName)
 			const oldName = this.members[index]
 			const trimmedNewName = newName.trim()
 

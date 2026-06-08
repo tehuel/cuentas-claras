@@ -9,9 +9,9 @@ const props = defineProps<{
 const store = useExpensesStore()
 
 const isEditing = ref(false)
-const editingAmount = ref(0)
-const editingFrom = ref('')
-const editingDescription = ref('')
+const amount = ref(0)
+const from = ref('')
+const description = ref('')
 
 const amountInput = ref<HTMLInputElement | null>(null)
 watch(isEditing, async (editing) => {
@@ -22,9 +22,9 @@ watch(isEditing, async (editing) => {
 })
 
 const startEdit = () => {
-  editingAmount.value = props.expense.amount
-  editingFrom.value = props.expense.from
-  editingDescription.value = props.expense.description
+  amount.value = props.expense.amount
+  from.value = props.expense.from
+  description.value = props.expense.description
   isEditing.value = true
 }
 
@@ -35,9 +35,9 @@ const cancelEdit = () => {
 const updateExpense = () => {
   store.updateExpense({
     id: props.expense.id,
-    amount: editingAmount.value,
-    from: editingFrom.value,
-    description: editingDescription.value,
+    amount: amount.value,
+    from: from.value,
+    description: description.value,
     participants: props.expense.participants,
   })
   isEditing.value = false
@@ -68,7 +68,7 @@ const deleteExpense = () => {
                 <span class="input-group-text">$</span>
                 <input
                   ref="amountInput"
-                  v-model.number="editingAmount"
+                  v-model.number="amount"
                   type="number"
                   class="form-control"
                   min="0"
@@ -82,7 +82,7 @@ const deleteExpense = () => {
             <label class="form-label w-100 m-0">
               Pagado por
               <select
-                v-model="editingFrom"
+                v-model="from"
                 class="form-select form-select-sm"
               >
                 <option
@@ -97,7 +97,7 @@ const deleteExpense = () => {
             <label class="form-label w-100 m-0">
               Descripción
               <input
-                v-model="editingDescription"
+                v-model="description"
                 type="text"
                 class="form-control form-control-sm"
                 placeholder="Descripción"
