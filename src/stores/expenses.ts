@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { calculateBalance, type Payment, type Transfer } from '../calculator'
+import { calculateBalance, type Transfer } from '../calculator'
 
 export type Expense = {
 	id: string,
@@ -9,27 +9,19 @@ export type Expense = {
 	description: string,
 }
 
-type PaymentDraft = {
+export type Payment = {
+	id: string,
 	amount: number,
 	from: string,
 	to: string,
-	note: string,
+	description: string,
 }
 
 export const useExpensesStore = defineStore('expenses', {
 	state: () => ({
 		members: [] as string[],
-
 		expenses: [] as Expense[],
-
-		paymentAmount: '',
-		paymentFrom: '',
-		paymentTo: '',
-		paymentNote: '',
 		payments: [] as Payment[],
-		editingPaymentIndex: -1,
-		editingPaymentData: { amount: 0, from: '', to: '', note: '' } as PaymentDraft,
-		showPaymentForm: false,
 	}),
 
 	getters: {
@@ -79,14 +71,6 @@ export const useExpensesStore = defineStore('expenses', {
 				}
 			})
 
-			if (this.paymentFrom === memberToRemove) {
-				this.paymentFrom = ''
-			}
-
-			if (this.paymentTo === memberToRemove) {
-				this.paymentTo = ''
-			}
-
 			this.saveState()
 		},
 
@@ -114,14 +98,6 @@ export const useExpensesStore = defineStore('expenses', {
 					expense.participants[participantIndex] = trimmedNewName
 				}
 			})
-
-			if (this.paymentFrom === oldName) {
-				this.paymentFrom = trimmedNewName
-			}
-
-			if (this.paymentTo === oldName) {
-				this.paymentTo = trimmedNewName
-			}
 
 			this.saveState()
 			return true
@@ -151,7 +127,7 @@ export const useExpensesStore = defineStore('expenses', {
 
 		updateExpense(expense: Expense) {
 			const oldExpenseIndex = this.expenses.findIndex(oldExpense => oldExpense.id === expense.id)
-			if (oldExpenseIndex === -1) return
+			if (oldExpenseIndex < 0) return
 
 			this.expenses.splice(oldExpenseIndex, 1, expense)
 			this.saveState()
@@ -173,53 +149,32 @@ export const useExpensesStore = defineStore('expenses', {
 
 		// payments
 		addPayment(payment: Payment) {
-			const { from, to, amount, note } = payment
-
-			if (!from || !to || from === to || !Number.isFinite(amount) || amount <= 0) {
+			if (!payment.from || !payment.to || payment.from === payment.to || !Number.isFinite(payment.amount) || payment.amount <= 0) {
 				return false
 			}
 
-			const trimmedNote = note?.trim() || ''
+			const trimmedDescription = payment.description?.trim() || ''
 
 			this.payments.unshift({
-				amount,
-				from,
-				to,
-				note: trimmedNote,
+				...payment,
+				description: trimmedDescription,
 			})
 
 			this.saveState()
 			return true
 		},
 
-		removePayment(index: number) {
-			if (this.editingPaymentIndex === index) {
-				this.cancelEditPayment()
-			}
-
-			this.payments.splice(index, 1)
+		removePayment(paymentId: string) {
+			const paymentIndex = this.payments.findIndex(payment => payment.id === paymentId)
+			this.payments.splice(paymentIndex, 1)
 			this.saveState()
 		},
 
-		updatePayment(index: number) {
-			const payment = this.payments[index]
-			if (!payment) return
+		updatePayment(payment: Payment) {
+			const oldPaymentIndex = this.payments.findIndex(oldPayment => oldPayment.id === payment.id)
+			if (oldPaymentIndex < 0) return
 
-			const amount = Number(this.editingPaymentData.amount)
-			const from = this.editingPaymentData.from
-			const to = this.editingPaymentData.to
-			const note = this.editingPaymentData.note.trim()
-
-			if (!from || !to || from === to || !Number.isFinite(amount) || amount <= 0) {
-				return
-			}
-
-			payment.amount = amount
-			payment.from = from
-			payment.to = to
-			payment.note = note || undefined
-
-			this.cancelEditPayment()
+			this.payments.splice(oldPaymentIndex, 1, payment)
 			this.saveState()
 		},
 
