@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
+import PaymentAddForm from "./PaymentAddForm.vue";
 
 const store = useExpensesStore()
-const paymentAmountInput = ref<HTMLInputElement | null>(null)
+const isAddPaymentFormVisible = ref(false)
 
-watch(
-	() => store.showPaymentForm,
-	async (isVisible) => {
-		if (!isVisible) return
-		await nextTick()
-		paymentAmountInput.value?.focus()
-	},
-)
+const openAddPaymentForm = () => {
+  isAddPaymentFormVisible.value = true
+}
+
+const closeAddPaymentForm = () => {
+  isAddPaymentFormVisible.value = false
+}
 </script>
 
 <template>
@@ -20,55 +20,13 @@ watch(
 		<div class="card-header">
 			<div class="d-flex justify-content-between align-items-center">
 				<h2 class="h4 m-0">Pagos</h2>
-				<button type="button" class="btn btn-sm btn-primary m-0" @click="store.showAddPaymentForm()" v-show="!store.showPaymentForm" :disabled="store.members.length < 2">
+				<button type="button" class="btn btn-sm btn-primary m-0" @click="openAddPaymentForm" v-show="!isAddPaymentFormVisible" :disabled="store.members.length < 2">
 					<i class="bi bi-plus-lg"></i> Pago
 				</button>
 			</div>
 
-			<div v-show="store.showPaymentForm" class="mt-3">
-				<form class="row g-2" @submit.prevent="store.addPayment" @keydown.esc.prevent="store.cancelAddPaymentForm()">
-					<div class="col-12 col-sm-3">
-						<label class="form-label w-100 m-0">
-							Monto
-							<div class="input-group input-group-sm">
-								<span class="input-group-text">$</span>
-								<input ref="paymentAmountInput" v-model="store.paymentAmount" type="number" class="form-control" min="0" step="0.01" />
-							</div>
-						</label>
-					</div>
-					<div class="col-12 col-sm-3">
-						<label class="form-label w-100 m-0">
-							Pagó
-							<select v-model="store.paymentFrom" class="form-select form-select-sm">
-								<option value="" disabled>Participante</option>
-								<option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
-							</select>
-						</label>
-					</div>
-					<div class="col-12 col-sm-3">
-						<label class="form-label w-100 m-0">
-							A
-							<select v-model="store.paymentTo" class="form-select form-select-sm">
-								<option value="" disabled>Participante</option>
-								<option v-for="member in store.members" :key="member" :value="member">{{ member }}</option>
-							</select>
-						</label>
-					</div>
-					<div class="col-12 col-sm-3">
-						<label class="form-label w-100 m-0">
-							Nota
-							<input v-model="store.paymentNote" type="text" class="form-control form-control-sm" placeholder="Opcional" />
-						</label>
-					</div>
-					<div class="col-12 d-flex justify-content-end">
-						<div class="d-flex gap-1">
-							<button type="submit" class="btn btn-sm btn-success" :disabled="store.members.length < 2"><i class="bi bi-check-lg"></i></button>
-							<button type="button" class="btn btn-sm btn-secondary" @click="store.cancelAddPaymentForm()"><i class="bi bi-x-lg"></i></button>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
+      <PaymentAddForm v-if="isAddPaymentFormVisible" @close="closeAddPaymentForm" />
+    </div>
 
 		<div v-if="store.payments.length === 0" class="p-3 text-secondary text-center">
 			No hay pagos todavía.

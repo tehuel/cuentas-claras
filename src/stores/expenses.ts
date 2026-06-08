@@ -172,37 +172,24 @@ export const useExpensesStore = defineStore('expenses', {
 		},
 
 		// payments
-		showAddPaymentForm() {
-			this.showPaymentForm = true
-		},
-
-		cancelAddPaymentForm() {
-			this.showPaymentForm = false
-			this.paymentAmount = ''
-			this.paymentFrom = ''
-			this.paymentTo = ''
-			this.paymentNote = ''
-		},
-
-		addPayment() {
-			const amount = Number(this.paymentAmount)
-			const from = this.paymentFrom
-			const to = this.paymentTo
-			const note = this.paymentNote.trim()
+		addPayment(payment: Payment) {
+			const { from, to, amount, note } = payment
 
 			if (!from || !to || from === to || !Number.isFinite(amount) || amount <= 0) {
-				return
+				return false
 			}
+
+			const trimmedNote = note?.trim() || ''
 
 			this.payments.unshift({
 				amount,
 				from,
 				to,
-				note: note || undefined,
+				note: trimmedNote,
 			})
 
-			this.cancelAddPaymentForm()
 			this.saveState()
+			return true
 		},
 
 		removePayment(index: number) {
@@ -212,24 +199,6 @@ export const useExpensesStore = defineStore('expenses', {
 
 			this.payments.splice(index, 1)
 			this.saveState()
-		},
-
-		startEditPayment(index: number) {
-			const payment = this.payments[index]
-			if (!payment) return
-
-			this.editingPaymentIndex = index
-			this.editingPaymentData = {
-				amount: payment.amount,
-				from: payment.from,
-				to: payment.to,
-				note: payment.note || '',
-			}
-		},
-
-		cancelEditPayment() {
-			this.editingPaymentIndex = -1
-			this.editingPaymentData = { amount: 0, from: '', to: '', note: '' }
 		},
 
 		updatePayment(index: number) {
