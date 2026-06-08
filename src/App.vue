@@ -11,7 +11,7 @@ import { useExpensesStore } from './stores/expenses'
 const store = useExpensesStore()
 
 onMounted(() => {
-	store.init()
+	store.loadState()
 })
 </script>
 

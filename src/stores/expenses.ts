@@ -283,9 +283,5 @@ export const useExpensesStore = defineStore('expenses', {
 				console.error('Failed to load state from localStorage:', error)
 			}
 		},
-
-		init() {
-			this.loadState()
-		},
 	},
 })
