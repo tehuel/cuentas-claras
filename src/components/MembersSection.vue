@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useExpensesStore } from '../stores/expenses'
 import MemberAddForm from './MemberAddForm.vue'
 import MemberListItem from './MemberListItem.vue'
+import { ref } from 'vue'
+import { useExpensesStore } from '../stores/expenses'
 
 const store = useExpensesStore()
 const isAddMemberFormVisible = ref(false)

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import AppFooter from './components/AppFooter.vue'
 import AppHeader from './components/AppHeader.vue'
 import ExpensesSection from './components/ExpensesSection.vue'
 import MembersSection from './components/MembersSection.vue'
 import PaymentsSection from './components/PaymentsSection.vue'
 import TransfersSection from './components/TransfersSection.vue'
+import { onMounted } from 'vue'
 import { useExpensesStore } from './stores/expenses'
 
 const store = useExpensesStore()

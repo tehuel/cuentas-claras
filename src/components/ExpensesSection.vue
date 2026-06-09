@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {useExpensesStore} from '../stores/expenses'
 import ExpenseAddForm from "./ExpenseAddForm.vue";
 import ExpenseListItem from "./ExpenseListItem.vue";
 import {ref} from "vue";
+import {useExpensesStore} from '../stores/expenses'
 
 const store = useExpensesStore()
 const isAddExpenseFormVisible = ref(false)

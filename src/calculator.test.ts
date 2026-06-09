@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { calculateBalance } from './calculator'
 import type { Payment, Transaction } from './calculator'
+import { describe, expect, it } from 'vitest'
+import { calculateBalance } from './calculator'
 
 describe('calculateBalance', () => {
     it('should calculate an initial empty balance', () => {

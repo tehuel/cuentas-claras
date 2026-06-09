@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useExpensesStore } from '../stores/expenses'
+import {type Expense, useExpensesStore} from "../stores/expenses.ts";
+import {onMounted, ref} from "vue";
+
+const props = defineProps<{
+  expense: Expense,
+}>()
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -8,39 +12,28 @@ const emit = defineEmits<{
 
 const store = useExpensesStore()
 
-const amount = ref(0)
-const from = ref('')
-const description = ref('')
+const updatedExpense = ref<Expense>({...props.expense})
+
+const editExpense = () => {
+  store.updateExpense(updatedExpense.value)
+  emit('close')
+}
+
+const cancelEditExpense = () => {
+  emit('close')
+}
 
 const amountInput = ref<HTMLInputElement | null>(null)
 onMounted(() => {
   amountInput.value?.focus()
 })
-
-const addExpense = () => {
-  const newExpense = {
-    id: Date.now().toString(),
-    description: description.value,
-    amount: amount.value,
-    from: from.value,
-    participants: [...store.members],
-  }
-  const success = store.addExpense(newExpense)
-  if (success) {
-    emit('close')
-  }
-}
-
-const cancelAddExpense = () => {
-  emit('close')
-}
 </script>
 
 <template>
   <form
     class="row g-2"
-    @submit.prevent="addExpense"
-    @keydown.esc.prevent="cancelAddExpense"
+    @submit.prevent="editExpense"
+    @keydown.esc.prevent="cancelEditExpense"
   >
     <div class="col-12 col-sm-4">
       <label class="form-label w-100 m-0">
@@ -49,11 +42,12 @@ const cancelAddExpense = () => {
           <span class="input-group-text">$</span>
           <input
             ref="amountInput"
-            v-model="amount"
+            v-model.number="updatedExpense.amount"
             type="number"
             class="form-control"
             min="0"
             step="1"
+            placeholder="Monto"
           >
         </span>
       </label>
@@ -62,13 +56,9 @@ const cancelAddExpense = () => {
       <label class="form-label w-100 m-0">
         Pagado por
         <select
-          v-model="from"
+          v-model="updatedExpense.from"
           class="form-select form-select-sm"
         >
-          <option
-            value=""
-            disabled
-          >Participante</option>
           <option
             v-for="member in store.members"
             :key="member"
@@ -81,9 +71,10 @@ const cancelAddExpense = () => {
       <label class="form-label w-100 m-0">
         Descripción
         <input
-          v-model="description"
+          v-model="updatedExpense.description"
           type="text"
           class="form-control form-control-sm"
+          placeholder="Descripción"
         >
       </label>
     </div>
@@ -92,14 +83,13 @@ const cancelAddExpense = () => {
         <button
           type="submit"
           class="btn btn-sm btn-success"
-          :disabled="store.members.length === 0"
         >
           <i class="bi bi-check-lg" />
         </button>
         <button
           type="button"
           class="btn btn-sm btn-secondary"
-          @click="cancelAddExpense"
+          @click="cancelEditExpense"
         >
           <i class="bi bi-x-lg" />
         </button>

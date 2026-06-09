@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useExpensesStore } from '../stores/expenses'
 import PaymentAddForm from "./PaymentAddForm.vue";
 import PaymentListItem from "./PaymentListItem.vue";
+import { ref } from 'vue'
+import { useExpensesStore } from '../stores/expenses'
 
 const store = useExpensesStore()
 const isAddPaymentFormVisible = ref(false)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
 
 const props = defineProps<{

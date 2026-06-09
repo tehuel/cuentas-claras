@@ -1,5 +1,5 @@
+import { type Transfer, calculateBalance } from '../calculator'
 import { defineStore } from 'pinia'
-import { calculateBalance, type Transfer } from '../calculator'
 
 export type Expense = {
 	id: string,

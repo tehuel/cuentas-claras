@@ -1,47 +1,15 @@
 <script setup lang="ts">
 import {type Expense, useExpensesStore} from "../stores/expenses.ts";
-import {nextTick, ref, watch} from "vue";
+import ExpenseEditForm from "./ExpenseEditForm.vue";
+import {ref} from "vue";
+import {useNumberFormat} from "../numberFormatter.ts";
 
 const props = defineProps<{
   expense: Expense,
 }>()
 
 const store = useExpensesStore()
-
 const isEditing = ref(false)
-const amount = ref(0)
-const from = ref('')
-const description = ref('')
-
-const amountInput = ref<HTMLInputElement | null>(null)
-watch(isEditing, async (editing) => {
-  if (editing) {
-    await nextTick()
-    amountInput.value?.focus()
-  }
-})
-
-const startEdit = () => {
-  amount.value = props.expense.amount
-  from.value = props.expense.from
-  description.value = props.expense.description
-  isEditing.value = true
-}
-
-const cancelEdit = () => {
-  isEditing.value = false
-}
-
-const updateExpense = () => {
-  store.updateExpense({
-    id: props.expense.id,
-    amount: amount.value,
-    from: from.value,
-    description: description.value,
-    participants: props.expense.participants,
-  })
-  isEditing.value = false
-}
 
 const toggleParticipant = (member: string) => {
   store.toggleParticipant(props.expense.id, member)
@@ -50,85 +18,23 @@ const toggleParticipant = (member: string) => {
 const deleteExpense = () => {
   store.removeExpense(props.expense.id)
 }
+
+const { format } = useNumberFormat()
 </script>
 
 <template>
   <li class="list-group-item">
     <div class="d-flex flex-column gap-3">
-      <template v-if="isEditing">
-        <form
-          class="row g-2"
-          @submit.prevent="updateExpense"
-          @keydown.esc.prevent="cancelEdit"
-        >
-          <div class="col-12 col-sm-4">
-            <label class="form-label w-100 m-0">
-              Monto
-              <span class="input-group input-group-sm">
-                <span class="input-group-text">$</span>
-                <input
-                  ref="amountInput"
-                  v-model.number="amount"
-                  type="number"
-                  class="form-control"
-                  min="0"
-                  step="1"
-                  placeholder="Monto"
-                >
-              </span>
-            </label>
-          </div>
-          <div class="col-12 col-sm-4">
-            <label class="form-label w-100 m-0">
-              Pagado por
-              <select
-                v-model="from"
-                class="form-select form-select-sm"
-              >
-                <option
-                  v-for="member in store.members"
-                  :key="member"
-                  :value="member"
-                >{{ member }}</option>
-              </select>
-            </label>
-          </div>
-          <div class="col-12 col-sm-4">
-            <label class="form-label w-100 m-0">
-              Descripción
-              <input
-                v-model="description"
-                type="text"
-                class="form-control form-control-sm"
-                placeholder="Descripción"
-              >
-            </label>
-          </div>
-          <div class="col-12 d-flex justify-content-end">
-            <div class="d-flex gap-1">
-              <button
-                type="submit"
-                class="btn btn-sm btn-success"
-              >
-                <i class="bi bi-check-lg" />
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm btn-secondary"
-                @click="cancelEdit"
-              >
-                <i class="bi bi-x-lg" />
-              </button>
-            </div>
-          </div>
-        </form>
-      </template>
-
+      <ExpenseEditForm
+        v-if="isEditing"
+        :expense="expense"
+        @close="isEditing = false"
+      />
       <template v-else>
         <div class="d-flex justify-content-between align-items-start gap-3">
           <div class="flex-grow-1">
             <div>
-              $<span style="font-variant-numeric: tabular-nums;">{{ expense.amount.toFixed(2) }}</span>
+              $<span style="font-variant-numeric: tabular-nums;">{{ format(expense.amount) }}</span>
               · <span>{{ expense.from }}</span>
               · <span class="fw-semibold">{{ expense.description }}</span>
             </div>
@@ -137,7 +43,7 @@ const deleteExpense = () => {
             <button
               type="button"
               class="btn btn-sm btn-outline-secondary"
-              @click="startEdit"
+              @click="isEditing = true"
             >
               <i class="bi bi-pencil-fill" />
             </button>
