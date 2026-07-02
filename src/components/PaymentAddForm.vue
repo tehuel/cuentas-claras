@@ -101,7 +101,7 @@ const cancelAddPayment = () => {
     </div>
     <div class="col-12 col-sm-3">
       <label class="form-label w-100 m-0">
-        Nota
+        Descripción
         <input
           v-model="description"
           type="text"
