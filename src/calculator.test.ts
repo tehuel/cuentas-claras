@@ -1,6 +1,17 @@
-import type { Payment, Transaction } from './calculator'
 import { describe, expect, it } from 'vitest'
 import { calculateBalance } from './calculator'
+
+type Transaction = {
+    amount: number,
+    from: string,
+    participants: string[],
+}
+
+type Payment = {
+    amount: number,
+    from: string,
+    to: string,
+}
 
 describe('calculateBalance', () => {
     it('should calculate an initial empty balance', () => {

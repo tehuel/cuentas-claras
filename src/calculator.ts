@@ -1,18 +1,3 @@
-// Record a single expense transaction
-export type Transaction = {
-    amount: number,
-    from: string,
-    participants: string[],
-}
-
-// Record a manual payment from one participant to another
-export type Payment = {
-    amount: number,
-    from: string,
-    to: string,
-    note?: string,
-}
-
 // Record a transfer to settle debts
 export type Transfer = {
     amount: number,
@@ -28,7 +13,10 @@ const applyBalanceDelta = (balanceMap: Record<string, number>, person: string, d
     balanceMap[person] = (balanceMap[person] || 0) + delta
 }
 
-export function calculateBalance(transactions: Transaction[], payments: Payment[] = []): Transfer[] {
+export function calculateBalance(
+    transactions: Array<{ amount: number, from: string, participants: string[] }>,
+    payments: Array<{ amount: number, from: string, to: string }> = [],
+): Transfer[] {
     // Step 1: Calculate net balance for each person
     const balanceMap: Record<string, number> = {}
 
