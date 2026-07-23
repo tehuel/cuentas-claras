@@ -8,11 +8,18 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint --fix"
   },
   "devDependencies": {
-    "@types/alpinejs": "^3.13.11",
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "eslint": "^10.4.1",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.6.0",
+    "jiti": "^2.7.0",
     "typescript": "~5.9.3",
+    "typescript-eslint": "^8.60.1",
     "vite": "^8.0.0-beta.13",
     "vitest": "^4.0.18"
   },
@@ -20,6 +27,7 @@
     "vite": "^8.0.0-beta.13"
   },
   "dependencies": {
-    "alpinejs": "^3.15.8"
+    "pinia": "^3.0.4",
+    "vue": "^3.5.35"
   }
 }

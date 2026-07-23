@@ -1,6 +1,17 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { calculateBalance } from './calculator'
-import type { Transaction } from './calculator'
+
+type Transaction = {
+    amount: number,
+    from: string,
+    participants: string[],
+}
+
+type Payment = {
+    amount: number,
+    from: string,
+    to: string,
+}
 
 describe('calculateBalance', () => {
     it('should calculate an initial empty balance', () => {
@@ -116,5 +127,33 @@ describe('calculateBalance', () => {
         expect(balance.length).toBe(2)
         expect(balance[0].amount).toBeCloseTo(100 / 3, 5)
         expect(balance[1].amount).toBeCloseTo(100 / 3, 5)
+    })
+
+    it('should reduce a debt when a participant makes a partial payment', () => {
+        const transactions: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] }
+        ]
+        const payments: Payment[] = [
+            { amount: 25, from: 'Bob', to: 'Alice' }
+        ]
+
+        const balance = calculateBalance(transactions, payments)
+
+        expect(balance.length).toBe(1)
+        expect(balance).toContainEqual({ amount: 25, from: 'Bob', to: 'Alice' })
+    })
+
+    it('should ignore payments from a participant to themselves', () => {
+        const transactions: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] }
+        ]
+        const payments: Payment[] = [
+            { amount: 25, from: 'Bob', to: 'Bob' }
+        ]
+
+        const balance = calculateBalance(transactions, payments)
+
+        expect(balance.length).toBe(1)
+        expect(balance).toContainEqual({ amount: 50, from: 'Bob', to: 'Alice' })
     })
 })
