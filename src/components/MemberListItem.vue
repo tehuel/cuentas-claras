@@ -78,15 +78,15 @@ const removeMember = () => {
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
+            aria-label="Editar participante"
             @click="startEdit"
-          >
             <i class="bi bi-pencil-fill" />
           </button>
           <button
             type="button"
             class="btn btn-sm btn-outline-danger"
+            aria-label="Eliminar participante"
             @click="removeMember"
-          >
             <i class="bi bi-trash2-fill" />
           </button>
         </div>

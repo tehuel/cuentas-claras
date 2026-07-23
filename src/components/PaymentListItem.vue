@@ -64,6 +64,7 @@ const deletePayment = () => {
             <span class="input-group input-group-sm">
               <span class="input-group-text">$</span>
               <input
+                ref="amountInput"
                 v-model.number="amount"
                 type="number"
                 class="form-control"
@@ -152,15 +153,15 @@ const deletePayment = () => {
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
+            aria-label="Editar pago"
             @click="startEdit"
-          >
             <i class="bi bi-pencil-fill" />
           </button>
           <button
             type="button"
             class="btn btn-sm btn-outline-danger"
+            aria-label="Eliminar pago"
             @click="deletePayment"
-          >
             <i class="bi bi-trash2-fill" />
           </button>
         </div>

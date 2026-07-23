@@ -52,7 +52,7 @@ const cancelAddPayment = () => {
           <span class="input-group-text">$</span>
           <input
             ref="amountInput"
-            v-model="amount"
+            v-model.number="amount"
             type="number"
             class="form-control"
             min="0"

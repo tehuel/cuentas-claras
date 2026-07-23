@@ -75,7 +75,6 @@ export const useExpensesStore = defineStore('expenses', {
 		},
 
 		updateMember(index: number, newName: string): boolean {
-			console.log('updateMember ', index, newName)
 			const oldName = this.members[index]
 			const trimmedNewName = newName.trim()
 
@@ -121,7 +120,8 @@ export const useExpensesStore = defineStore('expenses', {
 		},
 
 		removeExpense(id: string) {
-			const expenseIndex = this.expenses.findIndex(expense => expense.id === id)
+			const expenseIndex = this.expenses.findIndex((expense) => expense.id === id)
+			if (expenseIndex < 0) return
 			this.expenses.splice(expenseIndex, 1)
 			this.saveState()
 		},
@@ -166,7 +166,8 @@ export const useExpensesStore = defineStore('expenses', {
 		},
 
 		removePayment(paymentId: string) {
-			const paymentIndex = this.payments.findIndex(payment => payment.id === paymentId)
+			const paymentIndex = this.payments.findIndex((payment) => payment.id === paymentId)
+			if (paymentIndex < 0) return
 			this.payments.splice(paymentIndex, 1)
 			this.saveState()
 		},
