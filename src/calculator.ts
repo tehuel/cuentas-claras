@@ -1,27 +1,46 @@
-export type Transaction = {
-    amount: number,
-    from: string,
-    participants: string[],
-}
-
+// Record a transfer to settle debts
 export type Transfer = {
     amount: number,
     from: string,
     to: string,
 }
 
-export function calculateBalance(transactions: Transaction[]): Transfer[] {
+const applyBalanceDelta = (balanceMap: Record<string, number>, person: string, delta: number) => {
+    if (!person || !Number.isFinite(delta) || delta === 0) {
+        return
+    }
+
+    balanceMap[person] = (balanceMap[person] || 0) + delta
+}
+
+export function calculateBalance(
+    transactions: Array<{ amount: number, from: string, participants: string[] }>,
+    payments: Array<{ amount: number, from: string, to: string }> = [],
+): Transfer[] {
     // Step 1: Calculate net balance for each person
     const balanceMap: Record<string, number> = {}
 
     transactions.forEach(({ amount, from, participants }) => {
+        if (!Number.isFinite(amount) || amount <= 0 || participants.length === 0) {
+            return
+        }
+
         const share = amount / participants.length
-        participants.forEach(participant => {
+        participants.forEach((participant) => {
             if (participant !== from) {
-                balanceMap[participant] = (balanceMap[participant] || 0) - share
-                balanceMap[from] = (balanceMap[from] || 0) + share
+                applyBalanceDelta(balanceMap, participant, -share)
+                applyBalanceDelta(balanceMap, from, share)
             }
         })
+    })
+
+    payments.forEach(({ amount, from, to }) => {
+        if (!Number.isFinite(amount) || amount <= 0 || from === to) {
+            return
+        }
+
+        applyBalanceDelta(balanceMap, from, amount)
+        applyBalanceDelta(balanceMap, to, -amount)
     })
 
     // Step 2: Separate debtors (negative) and creditors (positive)

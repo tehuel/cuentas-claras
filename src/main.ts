@@ -1,9 +1,8 @@
-import Alpine from 'alpinejs'
-import { expensesApp } from './expensesApp'
+import App from './App.vue'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import { themeInit } from './theme'
 
-Alpine.data('expensesApp', expensesApp)
-
-Alpine.start()
+createApp(App).use(createPinia()).mount('#app')
 
 themeInit()
