@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HelpTooltip from './HelpTooltip.vue'
 import MemberAddForm from './MemberAddForm.vue'
 import MemberListItem from './MemberListItem.vue'
 import { ref } from 'vue'
@@ -20,9 +21,15 @@ const closeAddMemberForm = () => {
   <section class="card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="h4 m-0">
-          Participantes
-        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h4 m-0">
+            Participantes
+          </h2>
+          <HelpTooltip
+            text="Agregá a las personas que forman parte del grupo para compartir gastos y saldar cuentas."
+            aria-label="Ayuda sobre Participantes"
+          />
+        </div>
         <button
           v-show="!isAddMemberFormVisible"
           type="button"

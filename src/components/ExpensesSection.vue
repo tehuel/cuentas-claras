@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import ExpenseAddForm from "./ExpenseAddForm.vue";
-import ExpenseListItem from "./ExpenseListItem.vue";
-import {ref} from "vue";
-import {useExpensesStore} from '../stores/expenses'
+import ExpenseAddForm from './ExpenseAddForm.vue'
+import ExpenseListItem from './ExpenseListItem.vue'
+import HelpTooltip from './HelpTooltip.vue'
+import { ref } from 'vue'
+import { useExpensesStore } from '../stores/expenses'
 
 const store = useExpensesStore()
 const isAddExpenseFormVisible = ref(false)
@@ -20,9 +21,15 @@ const closeAddExpenseForm = () => {
   <section class="card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="h4 m-0">
-          Gastos
-        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h4 m-0">
+            Gastos
+          </h2>
+          <HelpTooltip
+            text="Registrá compras o gastos pagados por un participante y divididos entre los integrantes seleccionados."
+            aria-label="Ayuda sobre Gastos"
+          />
+        </div>
         <button
           v-show="!isAddExpenseFormVisible"
           type="button"

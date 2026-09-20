@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue'
+import HelpTooltip from './HelpTooltip.vue'
 import { formatTransfersSummary } from '../transfersSummary'
 import { useExpensesStore } from '../stores/expenses'
 import { useNumberFormat } from '../numberFormatter'
@@ -47,9 +48,15 @@ onUnmounted(() => {
   <section class="card border-primary">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="h4 m-0">
-          Reparto
-        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h4 m-0">
+            Reparto
+          </h2>
+          <HelpTooltip
+            text="Muestra las transferencias sugeridas para que todo el grupo quede a mano con la menor cantidad de pagos."
+            aria-label="Ayuda sobre Reparto"
+          />
+        </div>
         <button
           v-if="store.transfers.length > 0"
           type="button"

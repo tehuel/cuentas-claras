@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import PaymentAddForm from "./PaymentAddForm.vue";
-import PaymentListItem from "./PaymentListItem.vue";
+import HelpTooltip from './HelpTooltip.vue'
+import PaymentAddForm from './PaymentAddForm.vue'
+import PaymentListItem from './PaymentListItem.vue'
 import { ref } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
 
@@ -20,9 +21,15 @@ const closeAddPaymentForm = () => {
   <section class="card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="h4 m-0">
-          Pagos
-        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h4 m-0">
+            Pagos
+          </h2>
+          <HelpTooltip
+            text="Registrá transferencias o reembolsos de dinero ya realizados entre dos personas para saldar deudas previas."
+            aria-label="Ayuda sobre Pagos"
+          />
+        </div>
         <button
           v-show="!isAddPaymentFormVisible"
           type="button"
