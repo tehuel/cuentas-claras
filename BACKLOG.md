@@ -8,7 +8,6 @@
 
 | PR # | Tipo | Título | Prioridad |
 | :--- | :--- | :--- | :--- |
-| [PR-01](#pr-01-cascada-de-participantes-en-pagos-al-eliminar-o-renombrar) | 🐛 Bug | Cascada de participantes en pagos al eliminar o renombrar | **Alta** |
 | [PR-02](#pr-02-generación-robusta-de-ids-con-cryptorandomuuid) | 🐛 Bug | Generación robusta de IDs con `crypto.randomUUID()` | **Alta** |
 | [PR-03](#pr-03-ordenamiento-descendente-en-algoritmo-de-reparto-voraz) | 🧮 Refactor | Ordenamiento descendente en algoritmo de reparto voraz | **Media** |
 | [PR-04](#pr-04-soporte-para-montos-con-decimales-centavos) | 💡 UX | Soporte para montos con decimales (centavos) | **Media** |
@@ -20,38 +19,11 @@
 | [PR-10](#pr-10-accesibilidad-web-atributo-lang-y-aria-labels) | ♿ A11y | Accesibilidad Web: atributo `lang="es"` y `aria-label`s en botones | **Baja** |
 | [PR-11](#pr-11-eliminación-de-hoja-de-estilos-bootstrap-redundante-en-indexhtml) | ⚡ Perf | Eliminación de hoja de estilos Bootstrap redundante en `index.html` | **Baja** |
 | [PR-12](#pr-12-pasos-de-test-y-lint-en-github-actions-y-actualización-a-v4) | 🛠️ CI/CD | Pasos de test y lint en GitHub Actions y actualización a v4 | **Baja** |
+| [PR-13](#pr-13-clarificación-de-naming-de-pagos-y-reparto-en-ui-y-código) | 💡 UX / Refactor | Clarificación de naming de Pagos y Reparto en UI y Código | **Media** |
 
 ---
 
 ## Detalle de Pull Requests
-
-### PR-01: Cascada de participantes en pagos al eliminar o renombrar
-- **Tipo**: Corrección de Bug / Integridad de Datos
-- **Prioridad**: Alta
-- **Archivos afectados**:
-  - `src/stores/expenses.ts`
-- **Problema**:
-  - `removeMember(index)` elimina al miembro de `this.members` y de las listas de `participants` y `from` de `expenses`, pero no actualiza `this.payments`. Los pagos donde el miembro eliminado era emisor (`from`) o receptor (`to`) quedan como referencias huérfanas.
-  - `updateMember(index, newName)` renombra al participante en `expenses`, pero no actualiza `payment.from` ni `payment.to` en `this.payments`.
-- **Solución propuesta**:
-  1. En `removeMember()`, filtrar o limpiar los pagos que involucren al participante eliminado:
-     ```typescript
-     this.payments = this.payments.filter(
-       (p) => p.from !== memberToRemove && p.to !== memberToRemove
-     )
-     ```
-  2. En `updateMember()`, propagar el nuevo nombre a `this.payments`:
-     ```typescript
-     this.payments.forEach((p) => {
-       if (p.from === oldName) p.from = trimmedNewName
-       if (p.to === oldName) p.to = trimmedNewName
-     })
-     ```
-- **Criterio de aceptación**:
-  - Al eliminar un miembro, no quedan pagos asociados a él.
-  - Al renombrar un miembro, todos sus pagos reflejan el nuevo nombre.
-
----
 
 ### PR-02: Generación robusta de IDs con `crypto.randomUUID()`
 - **Tipo**: Corrección de Bug / Confiabilidad
@@ -250,4 +222,33 @@
   - Agregar pasos de ejecución para `npm run test` y `npm run lint` previos a la compilación y despliegue.
 - **Criterio de aceptación**:
   - El flujo de despliegue se detiene automáticamente si los tests o el linter fallan.
+
+---
+
+### PR-13: Clarificación de naming de Pagos y Reparto en UI y Código
+- **Tipo**: Mejora de UX / Refactorización de Dominio
+- **Prioridad**: Media
+- **Archivos afectados**:
+  - `src/components/PaymentsSection.vue`
+  - `src/components/PaymentAddForm.vue`
+  - `src/components/PaymentListItem.vue`
+  - `src/components/TransfersSection.vue`
+  - `src/stores/expenses.ts`
+  - `src/calculator.ts`
+  - `src/stores/expenses.test.ts`
+- **Problema**:
+  - La coexistencia de los términos "Pagos" (reembolsos manuales ya realizados entre dos personas) y "Reparto / Transferencias" (liquidación final sugerida por el algoritmo) genera confusión conceptual tanto en los usuarios de la aplicación como en el desarrollo del código.
+- **Solución propuesta**:
+  1. **UI**:
+     - Renombrar la sección "Pagos" a "Pagos directos" o "Reembolsos" (y el botón de acción a "+ Pago directo" o "+ Registrar reembolso").
+     - Renombrar la sección "Reparto" a "Reparto final" o "Liquidación de saldos" (con subtítulo descriptivo "Quién le debe a quién para quedar a mano").
+  2. **Código y Dominio**:
+     - Renombrar tipos e interfaces: `Payment` $\rightarrow$ `DirectPayment` o `Reimbursement`; `Transfer` $\rightarrow$ `SettlementTransfer`.
+     - En el store: renombrar `payments` $\rightarrow$ `directPayments`, garantizando retrocompatibilidad en `loadState()` para migrar sin pérdida de datos los estados previos guardados en `localStorage` (`state.payments || state.directPayments`).
+     - Renombrar getter `transfers` $\rightarrow$ `settlementTransfers` (o mantener un getter de compatibilidad).
+- **Criterio de aceptación**:
+  - La interfaz de usuario distingue con claridad meridiana los registros manuales previos de la liquidación final sugerida.
+  - El código y los tipos de TypeScript reflejan semánticamente la diferencia entre entradas históricas y salidas calculadas.
+  - Se mantiene retrocompatibilidad total con datos guardados previamente en `localStorage`.
+
 

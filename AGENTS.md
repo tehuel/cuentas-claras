@@ -61,6 +61,7 @@ cuentas-claras/
 │   │   ├── PaymentsSection.vue # Direct payments section container
 │   │   └── TransfersSection.vue# Final debt settlement transfers section ("Reparto")
 │   ├── stores/
+│   │   ├── expenses.test.ts    # Vitest unit tests for Pinia expenses store cascades
 │   │   └── expenses.ts         # Pinia store managing members, expenses, payments, and storage
 │   ├── App.vue                 # Root application component coordinating sections and loading state
 │   ├── calculator.ts           # Pure algorithm: calculates net balances & minimal settlement transfers
@@ -76,6 +77,14 @@ cuentas-claras/
 ├── tsconfig.json               # TypeScript compiler options
 └── vite.config.ts              # Vite bundler configuration with Vue plugin
 ```
+
+### Domain Glossary: Inputs vs. Outputs
+
+To avoid ambiguity between manual entries and calculated results:
+- **`members` (Participantes)**: *Input entity.* Group members participating in shared expenses and reimbursements.
+- **`expenses` (Gastos)**: *Input entity.* Shared group purchases paid by one member and split among participants.
+- **`payments` (Pagos directos / Reembolsos)**: *Input entity.* Manual reimbursements already transferred directly between two members (e.g. "Bob paid Alice $50 via bank transfer"). Stored in Pinia state and persisted in `localStorage`.
+- **`transfers` (Reparto / Liquidación final)**: *Output / Calculated getter.* The optimal debt settlement transfers computed dynamically by `calculateBalance(expenses, payments)` in `src/calculator.ts`. It represents who owes whom to settle up all group debts. Never stored or edited directly; reactively recalculated from scratch.
 
 ### Key Modules & Responsibilities
 
@@ -101,8 +110,8 @@ The reactive central store (`useExpensesStore`):
   - `transfers`: Calls `calculateBalance(this.expenses, this.payments)` when members and expenses exist.
 - **Relational Invariants & Cascades**:
   - `addMember`: Automatically adds the new member as a participant to all existing expenses.
-  - `removeMember`: Removes the member from all expense participant lists; reassigns payer if the deleted member was the payer.
-  - `updateMember`: Cascades name changes across all existing expenses (`from` and `participants`).
+  - `removeMember`: Removes the member from all expense participant lists; reassigns payer if the deleted member was the payer; removes associated direct payments.
+  - `updateMember`: Cascades name changes across all existing expenses (`from` and `participants`) and direct payments (`from` and `to`).
   - `saveState` / `loadState`: Serializes store state into `localStorage` under the key `'expensesAppState'`.
 
 #### `src/theme.ts`
