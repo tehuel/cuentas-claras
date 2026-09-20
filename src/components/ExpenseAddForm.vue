@@ -19,7 +19,7 @@ onMounted(() => {
 
 const addExpense = () => {
   const newExpense = {
-    id: Date.now().toString(),
+    id: crypto.randomUUID(),
     description: description.value,
     amount: amount.value,
     from: from.value,

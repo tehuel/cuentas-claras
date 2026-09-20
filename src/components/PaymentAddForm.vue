@@ -20,7 +20,7 @@ onMounted(() => {
 
 const addPayment = () => {
   const newPayment: Payment = {
-    id: Date.now().toString(),
+    id: crypto.randomUUID(),
     amount: amount.value,
     from: from.value,
     to: to.value,

@@ -8,7 +8,6 @@
 
 | PR # | Tipo | Título | Prioridad |
 | :--- | :--- | :--- | :--- |
-| [PR-02](#pr-02-generación-robusta-de-ids-con-cryptorandomuuid) | 🐛 Bug | Generación robusta de IDs con `crypto.randomUUID()` | **Alta** |
 | [PR-03](#pr-03-ordenamiento-descendente-en-algoritmo-de-reparto-voraz) | 🧮 Refactor | Ordenamiento descendente en algoritmo de reparto voraz | **Media** |
 | [PR-04](#pr-04-soporte-para-montos-con-decimales-centavos) | 💡 UX | Soporte para montos con decimales (centavos) | **Media** |
 | [PR-05](#pr-05-copiar-resumen-de-reparto-al-portapapeles-para-whatsapp) | 🚀 Feature | Copiar resumen de reparto al portapapeles para WhatsApp | **Media** |
@@ -24,21 +23,6 @@
 ---
 
 ## Detalle de Pull Requests
-
-### PR-02: Generación robusta de IDs con `crypto.randomUUID()`
-- **Tipo**: Corrección de Bug / Confiabilidad
-- **Prioridad**: Alta
-- **Archivos afectados**:
-  - `src/components/ExpenseAddForm.vue`
-  - `src/components/PaymentAddForm.vue`
-- **Problema**:
-  - El uso de `Date.now().toString()` genera colisiones de ID si dos operaciones ocurren dentro del mismo milisegundo (ej. cargas rápidas, scripts o futuras importaciones de datos).
-- **Solución propuesta**:
-  - Reemplazar `id: Date.now().toString()` por `id: crypto.randomUUID()`.
-- **Criterio de aceptación**:
-  - Todos los nuevos gastos y pagos se crean con un identificador UUID estándar v4.
-
----
 
 ### PR-03: Ordenamiento descendente en algoritmo de reparto voraz
 - **Tipo**: Optimización algorítmica / Refactor
