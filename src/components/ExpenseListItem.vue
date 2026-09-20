@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {type Expense, useExpensesStore} from "../stores/expenses.ts";
-import ExpenseEditForm from "./ExpenseEditForm.vue";
-import {ref} from "vue";
-import {useNumberFormat} from "../numberFormatter.ts";
+import { type Expense, useExpensesStore } from '../stores/expenses'
+import ExpenseEditForm from './ExpenseEditForm.vue'
+import { ref } from 'vue'
+import { useNumberFormat } from '../numberFormatter'
 
 const props = defineProps<{
   expense: Expense,
@@ -10,13 +10,24 @@ const props = defineProps<{
 
 const store = useExpensesStore()
 const isEditing = ref(false)
+const isConfirmingDelete = ref(false)
 
 const toggleParticipant = (member: string) => {
   store.toggleParticipant(props.expense.id, member)
 }
 
-const deleteExpense = () => {
+const startEdit = () => {
+  isConfirmingDelete.value = false
+  isEditing.value = true
+}
+
+const confirmDelete = () => {
   store.removeExpense(props.expense.id)
+  isConfirmingDelete.value = false
+}
+
+const cancelDelete = () => {
+  isConfirmingDelete.value = false
 }
 
 const { format } = useNumberFormat()
@@ -39,12 +50,37 @@ const { format } = useNumberFormat()
               · <span class="fw-semibold">{{ expense.description }}</span>
             </div>
           </div>
-          <div class="d-flex gap-1">
+          <div
+            v-if="isConfirmingDelete"
+            class="d-flex align-items-center gap-1"
+          >
+            <span class="small text-danger me-1">¿Eliminar?</span>
+            <button
+              type="button"
+              class="btn btn-sm btn-danger"
+              aria-label="Confirmar eliminación de gasto"
+              @click="confirmDelete"
+            >
+              <i class="bi bi-check-lg" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              aria-label="Cancelar eliminación"
+              @click="cancelDelete"
+            >
+              <i class="bi bi-x-lg" />
+            </button>
+          </div>
+          <div
+            v-else
+            class="d-flex gap-1"
+          >
             <button
               type="button"
               class="btn btn-sm btn-outline-secondary"
               aria-label="Editar gasto"
-              @click="isEditing = true"
+              @click="startEdit"
             >
               <i class="bi bi-pencil-fill" />
             </button>
@@ -52,7 +88,7 @@ const { format } = useNumberFormat()
               type="button"
               class="btn btn-sm btn-outline-danger"
               aria-label="Eliminar gasto"
-              @click="deleteExpense"
+              @click="isConfirmingDelete = true"
             >
               <i class="bi bi-trash2-fill" />
             </button>

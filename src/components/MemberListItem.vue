@@ -10,6 +10,7 @@ const props = defineProps<{
 const store = useExpensesStore()
 
 const isEditing = ref(false)
+const isConfirmingDelete = ref(false)
 const name = ref('')
 const editErrorMessage = ref('')
 
@@ -24,6 +25,7 @@ watch(isEditing, async (editing) => {
 const startEdit = () => {
 	name.value = props.member
 	editErrorMessage.value = ''
+	isConfirmingDelete.value = false
 	isEditing.value = true
 }
 
@@ -51,8 +53,13 @@ const updateMember = () => {
 	}
 }
 
-const removeMember = () => {
+const confirmDelete = () => {
 	store.removeMember(props.index)
+	isConfirmingDelete.value = false
+}
+
+const cancelDelete = () => {
+	isConfirmingDelete.value = false
 }
 </script>
 
@@ -100,7 +107,32 @@ const removeMember = () => {
     <template v-else>
       <div class="d-flex gap-2 w-100 align-items-center justify-content-between">
         <span>{{ member }}</span>
-        <div class="d-flex gap-1 justify-content-end">
+        <div
+          v-if="isConfirmingDelete"
+          class="d-flex align-items-center gap-1 justify-content-end"
+        >
+          <span class="small text-danger me-1">¿Eliminar?</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger"
+            aria-label="Confirmar eliminación de participante"
+            @click="confirmDelete"
+          >
+            <i class="bi bi-check-lg" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary"
+            aria-label="Cancelar eliminación"
+            @click="cancelDelete"
+          >
+            <i class="bi bi-x-lg" />
+          </button>
+        </div>
+        <div
+          v-else
+          class="d-flex gap-1 justify-content-end"
+        >
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
@@ -113,7 +145,7 @@ const removeMember = () => {
             type="button"
             class="btn btn-sm btn-outline-danger"
             aria-label="Eliminar participante"
-            @click="removeMember"
+            @click="isConfirmingDelete = true"
           >
             <i class="bi bi-trash2-fill" />
           </button>
