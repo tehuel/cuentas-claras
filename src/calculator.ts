@@ -55,6 +55,9 @@ export function calculateBalance(
         }
     })
 
+    debtors.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    creditors.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+
     // Step 3: Settle debts with greedy algorithm (minimal transfers)
     const transfers: Transfer[] = []
 
