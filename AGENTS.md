@@ -69,6 +69,7 @@ cuentas-claras/
 │   ├── main.ts                 # Vue application bootstrap, Pinia initialization, theme setup
 │   ├── numberFormatter.ts      # Argentinian Spanish number formatting utility (Intl.NumberFormat)
 │   └── theme.ts                # Light/dark mode toggle logic and localStorage persistence
+├── BACKLOG.md              # Planned improvements and bug fixes backlog (PR roadmap)
 ├── eslint.config.ts            # ESLint flat config with rules (includes sort-imports)
 ├── index.html                  # Main HTML entry with CDN links (Bootstrap, Bootswatch, Icons)
 ├── package.json                # Project dependencies and npm scripts
