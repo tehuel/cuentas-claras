@@ -8,7 +8,6 @@
 
 | PR # | Tipo | Título | Prioridad |
 | :--- | :--- | :--- | :--- |
-| [PR-03](#pr-03-ordenamiento-descendente-en-algoritmo-de-reparto-voraz) | 🧮 Refactor | Ordenamiento descendente en algoritmo de reparto voraz | **Media** |
 | [PR-04](#pr-04-soporte-para-montos-con-decimales-centavos) | 💡 UX | Soporte para montos con decimales (centavos) | **Media** |
 | [PR-05](#pr-05-copiar-resumen-de-reparto-al-portapapeles-para-whatsapp) | 🚀 Feature | Copiar resumen de reparto al portapapeles para WhatsApp | **Media** |
 | [PR-06](#pr-06-acción-de-reiniciar--nuevo-grupo-con-modal-de-confirmación) | 🚀 Feature | Acción de reiniciar / nuevo grupo con modal de confirmación | **Media** |
@@ -23,27 +22,6 @@
 ---
 
 ## Detalle de Pull Requests
-
-### PR-03: Ordenamiento descendente en algoritmo de reparto voraz
-- **Tipo**: Optimización algorítmica / Refactor
-- **Prioridad**: Media
-- **Archivos afectados**:
-  - `src/calculator.ts`
-  - `src/calculator.test.ts`
-- **Problema**:
-  - En `calculateBalance`, las listas `debtors` y `creditors` se procesan según el orden arbitrario de iteración de `Object.entries(balanceMap)`. Sin ordenamiento por magnitud, el algoritmo voraz (greedy) puede generar más transferencias de las estrictamente necesarias.
-- **Solución propuesta**:
-  - Ordenar ambos arreglos en forma descendente por monto antes de iniciar el bucle de liquidación:
-    ```typescript
-    debtors.sort((a, b) => b[1] - a[1])
-    creditors.sort((a, b) => b[1] - a[1])
-    ```
-  - Agregar pruebas unitarias en `src/calculator.test.ts` verificando que el orden de registro de los participantes no altere la cantidad mínima de transferencias resultante.
-- **Criterio de aceptación**:
-  - Se garantiza un número mínimo óptimo de transferencias sin importar el orden de inserción de los datos.
-  - Todos los tests existentes en `calculator.test.ts` continúan pasando.
-
----
 
 ### PR-04: Soporte para montos con decimales (centavos)
 - **Tipo**: Mejora de UX / Usabilidad
