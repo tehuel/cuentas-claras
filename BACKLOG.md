@@ -8,7 +8,6 @@
 
 | PR # | Tipo | Título | Prioridad |
 | :--- | :--- | :--- | :--- |
-| [PR-01](#pr-01-cascada-de-participantes-en-pagos-al-eliminar-o-renombrar) | 🐛 Bug | Cascada de participantes en pagos al eliminar o renombrar | **Alta** |
 | [PR-02](#pr-02-generación-robusta-de-ids-con-cryptorandomuuid) | 🐛 Bug | Generación robusta de IDs con `crypto.randomUUID()` | **Alta** |
 | [PR-03](#pr-03-ordenamiento-descendente-en-algoritmo-de-reparto-voraz) | 🧮 Refactor | Ordenamiento descendente en algoritmo de reparto voraz | **Media** |
 | [PR-04](#pr-04-soporte-para-montos-con-decimales-centavos) | 💡 UX | Soporte para montos con decimales (centavos) | **Media** |
@@ -24,34 +23,6 @@
 ---
 
 ## Detalle de Pull Requests
-
-### PR-01: Cascada de participantes en pagos al eliminar o renombrar
-- **Tipo**: Corrección de Bug / Integridad de Datos
-- **Prioridad**: Alta
-- **Archivos afectados**:
-  - `src/stores/expenses.ts`
-- **Problema**:
-  - `removeMember(index)` elimina al miembro de `this.members` y de las listas de `participants` y `from` de `expenses`, pero no actualiza `this.payments`. Los pagos donde el miembro eliminado era emisor (`from`) o receptor (`to`) quedan como referencias huérfanas.
-  - `updateMember(index, newName)` renombra al participante en `expenses`, pero no actualiza `payment.from` ni `payment.to` en `this.payments`.
-- **Solución propuesta**:
-  1. En `removeMember()`, filtrar o limpiar los pagos que involucren al participante eliminado:
-     ```typescript
-     this.payments = this.payments.filter(
-       (p) => p.from !== memberToRemove && p.to !== memberToRemove
-     )
-     ```
-  2. En `updateMember()`, propagar el nuevo nombre a `this.payments`:
-     ```typescript
-     this.payments.forEach((p) => {
-       if (p.from === oldName) p.from = trimmedNewName
-       if (p.to === oldName) p.to = trimmedNewName
-     })
-     ```
-- **Criterio de aceptación**:
-  - Al eliminar un miembro, no quedan pagos asociados a él.
-  - Al renombrar un miembro, todos sus pagos reflejan el nuevo nombre.
-
----
 
 ### PR-02: Generación robusta de IDs con `crypto.randomUUID()`
 - **Tipo**: Corrección de Bug / Confiabilidad
