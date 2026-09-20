@@ -12,7 +12,6 @@
 | [PR-05](#pr-05-copiar-resumen-de-reparto-al-portapapeles-para-whatsapp) | 🚀 Feature | Copiar resumen de reparto al portapapeles para WhatsApp | **Media** |
 | [PR-06](#pr-06-acción-de-reiniciar--nuevo-grupo-con-modal-de-confirmación) | 🚀 Feature | Acción de reiniciar / nuevo grupo con modal de confirmación | **Media** |
 | [PR-07](#pr-07-insignias-de-balance-neto-individual-por-participante) | 🚀 Feature | Insignias de balance neto individual por participante | **Media** |
-| [PR-08](#pr-08-feedback-de-validación-y-confirmación-de-eliminación) | 💡 UX | Feedback de validación y confirmación de eliminación | **Media** |
 | [PR-09](#pr-09-unificación-de-formateo-de-moneda-y-memoización-de-intlnumberformat) | ⚡ Perf | Unificación de formateo de moneda y memoización de `Intl.NumberFormat` | **Baja** |
 | [PR-10](#pr-10-accesibilidad-web-atributo-lang-y-aria-labels) | ♿ A11y | Accesibilidad Web: atributo `lang="es"` y `aria-label`s en botones | **Baja** |
 | [PR-11](#pr-11-eliminación-de-hoja-de-estilos-bootstrap-redundante-en-indexhtml) | ⚡ Perf | Eliminación de hoja de estilos Bootstrap redundante en `index.html` | **Baja** |
@@ -93,29 +92,6 @@
     - Gris (`badge text-bg-secondary`): `$ 0` (equilibrado)
 - **Criterio de aceptación**:
   - Cada participante muestra su balance acumulado actualizado en tiempo real.
-
----
-
-### PR-08: Feedback de validación y confirmación de eliminación
-- **Tipo**: Mejora de UX / Seguridad
-- **Prioridad**: Media
-- **Archivos afectados**:
-  - `src/components/MemberAddForm.vue`
-  - `src/components/PaymentAddForm.vue`
-  - `src/components/MemberListItem.vue`
-  - `src/components/ExpenseListItem.vue`
-  - `src/components/PaymentListItem.vue`
-- **Problema**:
-  - Al ingresar un miembro duplicado o vacío, `store.addMember` retorna `false` pero el formulario no muestra ningún mensaje de error al usuario.
-  - En `PaymentAddForm`, los selects `from` y `to` permiten seleccionar a la misma persona para pagarse a sí misma.
-  - Los botones de eliminación borran elementos de forma inmediata sin confirmación previa.
-- **Solución propuesta**:
-  - Agregar feedback visual en los formularios (ej. clase `is-invalid` y mensaje de error).
-  - Deshabilitar en el select de destino (`to`) la opción seleccionada en el origen (`from`).
-  - Agregar un diálogo o paso de confirmación rápido antes de eliminar miembros, gastos o pagos.
-- **Criterio de aceptación**:
-  - Los formularios informan claramente el motivo de fallo y se previene la selección de auto-pagos.
-  - Se previene la eliminación accidental de registros.
 
 ---
 

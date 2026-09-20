@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {type Payment, useExpensesStore} from "../stores/expenses.ts";
-import {nextTick, ref, watch} from "vue";
+import { type Payment, useExpensesStore } from '../stores/expenses'
+import { nextTick, ref, watch } from 'vue'
 
 const props = defineProps<{
   payment: Payment,
@@ -9,6 +9,7 @@ const props = defineProps<{
 const store = useExpensesStore()
 
 const isEditing = ref(false)
+const isConfirmingDelete = ref(false)
 const amount = ref(0)
 const from = ref('')
 const to = ref('')
@@ -22,11 +23,18 @@ watch(isEditing, async (editing) => {
   }
 })
 
+watch(from, (newFrom) => {
+  if (isEditing.value && newFrom && newFrom === to.value) {
+    to.value = ''
+  }
+})
+
 const startEdit = () => {
   amount.value = props.payment.amount
   from.value = props.payment.from
   to.value = props.payment.to
   description.value = props.payment.description
+  isConfirmingDelete.value = false
   isEditing.value = true
 }
 
@@ -35,6 +43,9 @@ const cancelEdit = () => {
 }
 
 const updatePayment = () => {
+  if (amount.value <= 0 || !from.value || !to.value || from.value === to.value) {
+    return
+  }
   store.updatePayment({
     id: props.payment.id,
     amount: amount.value,
@@ -45,8 +56,13 @@ const updatePayment = () => {
   isEditing.value = false
 }
 
-const deletePayment = () => {
+const confirmDelete = () => {
   store.removePayment(props.payment.id)
+  isConfirmingDelete.value = false
+}
+
+const cancelDelete = () => {
+  isConfirmingDelete.value = false
 }
 </script>
 
@@ -101,6 +117,7 @@ const deletePayment = () => {
                 v-for="member in store.members"
                 :key="member"
                 :value="member"
+                :disabled="member === from"
               >{{ member }}</option>
             </select>
           </label>
@@ -150,22 +167,43 @@ const deletePayment = () => {
 
         <div class="d-flex align-items-center gap-2">
           <span class="badge text-bg-success">$ {{ payment.amount.toFixed(2) }}</span>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary"
-            aria-label="Editar pago"
-            @click="startEdit"
-          >
-            <i class="bi bi-pencil-fill" />
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-danger"
-            aria-label="Eliminar pago"
-            @click="deletePayment"
-          >
-            <i class="bi bi-trash2-fill" />
-          </button>
+          <template v-if="isConfirmingDelete">
+            <span class="small text-danger me-1">¿Eliminar?</span>
+            <button
+              type="button"
+              class="btn btn-sm btn-danger"
+              aria-label="Confirmar eliminación de pago"
+              @click="confirmDelete"
+            >
+              <i class="bi bi-check-lg" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              aria-label="Cancelar eliminación"
+              @click="cancelDelete"
+            >
+              <i class="bi bi-x-lg" />
+            </button>
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              aria-label="Editar pago"
+              @click="startEdit"
+            >
+              <i class="bi bi-pencil-fill" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              aria-label="Eliminar pago"
+              @click="isConfirmingDelete = true"
+            >
+              <i class="bi bi-trash2-fill" />
+            </button>
+          </template>
         </div>
       </div>
     </template>

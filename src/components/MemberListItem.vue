@@ -10,7 +10,9 @@ const props = defineProps<{
 const store = useExpensesStore()
 
 const isEditing = ref(false)
+const isConfirmingDelete = ref(false)
 const name = ref('')
+const editErrorMessage = ref('')
 
 const editInput = ref<HTMLInputElement | null>(null)
 watch(isEditing, async (editing) => {
@@ -22,21 +24,42 @@ watch(isEditing, async (editing) => {
 
 const startEdit = () => {
 	name.value = props.member
+	editErrorMessage.value = ''
+	isConfirmingDelete.value = false
 	isEditing.value = true
 }
 
 const cancelEdit = () => {
 	isEditing.value = false
 	name.value = ''
+	editErrorMessage.value = ''
 }
 
 const updateMember = () => {
-	store.updateMember(props.index, name.value)
-  isEditing.value = false
+	const trimmedName = name.value.trim()
+	if (!trimmedName) {
+		editErrorMessage.value = 'El nombre no puede estar vacío'
+		return
+	}
+	if (trimmedName !== props.member && store.members.includes(trimmedName)) {
+		editErrorMessage.value = 'Ya existe un participante con este nombre'
+		return
+	}
+
+	const success = store.updateMember(props.index, trimmedName)
+	if (success) {
+		isEditing.value = false
+		editErrorMessage.value = ''
+	}
 }
 
-const removeMember = () => {
+const confirmDelete = () => {
 	store.removeMember(props.index)
+	isConfirmingDelete.value = false
+}
+
+const cancelDelete = () => {
+	isConfirmingDelete.value = false
 }
 </script>
 
@@ -44,37 +67,72 @@ const removeMember = () => {
   <li class="list-group-item d-flex align-items-center justify-content-between gap-2">
     <template v-if="isEditing">
       <form
-        class="d-flex gap-2 w-100"
+        class="d-flex flex-column gap-1 w-100"
         @submit.prevent="updateMember"
         @keydown.esc.prevent="cancelEdit"
       >
-        <input
-          ref="editInput"
-          v-model="name"
-          type="text"
-          class="form-control form-control-sm flex-grow-1"
+        <div class="d-flex gap-2 w-100">
+          <input
+            ref="editInput"
+            v-model="name"
+            type="text"
+            class="form-control form-control-sm flex-grow-1"
+            :class="{ 'is-invalid': !!editErrorMessage }"
+            @input="editErrorMessage = ''"
+          >
+          <div class="d-flex gap-1">
+            <button
+              type="submit"
+              class="btn btn-sm btn-success"
+            >
+              <i class="bi bi-check-lg" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="cancelEdit"
+            >
+              <i class="bi bi-x-lg" />
+            </button>
+          </div>
+        </div>
+        <div
+          v-if="editErrorMessage"
+          class="invalid-feedback d-block m-0"
         >
-        <div class="d-flex gap-1">
-          <button
-            type="submit"
-            class="btn btn-sm btn-success"
-          >
-            <i class="bi bi-check-lg" />
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-secondary"
-            @click="cancelEdit"
-          >
-            <i class="bi bi-x-lg" />
-          </button>
+          {{ editErrorMessage }}
         </div>
       </form>
     </template>
     <template v-else>
       <div class="d-flex gap-2 w-100 align-items-center justify-content-between">
         <span>{{ member }}</span>
-        <div class="d-flex gap-1 justify-content-end">
+        <div
+          v-if="isConfirmingDelete"
+          class="d-flex align-items-center gap-1 justify-content-end"
+        >
+          <span class="small text-danger me-1">¿Eliminar?</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger"
+            aria-label="Confirmar eliminación de participante"
+            @click="confirmDelete"
+          >
+            <i class="bi bi-check-lg" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary"
+            aria-label="Cancelar eliminación"
+            @click="cancelDelete"
+          >
+            <i class="bi bi-x-lg" />
+          </button>
+        </div>
+        <div
+          v-else
+          class="d-flex gap-1 justify-content-end"
+        >
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
@@ -87,7 +145,7 @@ const removeMember = () => {
             type="button"
             class="btn btn-sm btn-outline-danger"
             aria-label="Eliminar participante"
-            @click="removeMember"
+            @click="isConfirmingDelete = true"
           >
             <i class="bi bi-trash2-fill" />
           </button>

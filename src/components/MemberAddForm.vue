@@ -8,6 +8,7 @@ const emit = defineEmits<{
 
 const store = useExpensesStore()
 const memberName = ref('')
+const errorMessage = ref('')
 
 const memberInput = ref<HTMLInputElement | null>(null)
 onMounted(() => {
@@ -15,10 +16,20 @@ onMounted(() => {
 })
 
 const addMember = () => {
-	const success = store.addMember(memberName.value)
+	const trimmedName = memberName.value.trim()
+	if (!trimmedName) {
+		errorMessage.value = 'El nombre no puede estar vacío'
+		return
+	}
+	if (store.members.includes(trimmedName)) {
+		errorMessage.value = 'Ya existe un participante con este nombre'
+		return
+	}
+
+	const success = store.addMember(trimmedName)
 	if (success) {
-    emit('close')
-  }
+		emit('close')
+	}
 }
 
 const cancelAddMemberForm = () => {
@@ -41,7 +52,15 @@ const cancelAddMemberForm = () => {
             v-model="memberName"
             type="text"
             class="form-control form-control-sm"
+            :class="{ 'is-invalid': !!errorMessage }"
+            @input="errorMessage = ''"
           >
+          <div
+            v-if="errorMessage"
+            class="invalid-feedback d-block"
+          >
+            {{ errorMessage }}
+          </div>
         </label>
       </div>
       <div class="col-12 d-flex justify-content-end">
