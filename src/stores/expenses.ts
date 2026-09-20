@@ -71,6 +71,10 @@ export const useExpensesStore = defineStore('expenses', {
 				}
 			})
 
+			this.payments = this.payments.filter(
+				(payment) => payment.from !== memberToRemove && payment.to !== memberToRemove,
+			)
+
 			this.saveState()
 		},
 
@@ -96,6 +100,15 @@ export const useExpensesStore = defineStore('expenses', {
 				const participantIndex = expense.participants.indexOf(oldName)
 				if (participantIndex > -1) {
 					expense.participants[participantIndex] = trimmedNewName
+				}
+			})
+
+			this.payments.forEach((payment) => {
+				if (payment.from === oldName) {
+					payment.from = trimmedNewName
+				}
+				if (payment.to === oldName) {
+					payment.to = trimmedNewName
 				}
 			})
 
