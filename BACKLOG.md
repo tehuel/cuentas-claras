@@ -9,7 +9,6 @@
 | PR # | Tipo | Título | Prioridad |
 | :--- | :--- | :--- | :--- |
 | [PR-04](#pr-04-soporte-para-montos-con-decimales-centavos) | 💡 UX | Soporte para montos con decimales (centavos) | **Media** |
-| [PR-05](#pr-05-copiar-resumen-de-reparto-al-portapapeles-para-whatsapp) | 🚀 Feature | Copiar resumen de reparto al portapapeles para WhatsApp | **Media** |
 | [PR-06](#pr-06-acción-de-reiniciar--nuevo-grupo-con-modal-de-confirmación) | 🚀 Feature | Acción de reiniciar / nuevo grupo con modal de confirmación | **Media** |
 | [PR-07](#pr-07-insignias-de-balance-neto-individual-por-participante) | 🚀 Feature | Insignias de balance neto individual por participante | **Media** |
 | [PR-09](#pr-09-unificación-de-formateo-de-moneda-y-memoización-de-intlnumberformat) | ⚡ Perf | Unificación de formateo de moneda y memoización de `Intl.NumberFormat` | **Baja** |
@@ -37,27 +36,6 @@
   - Configurar `step="0.01"` en los inputs numéricos de monto.
 - **Criterio de aceptación**:
   - Los usuarios pueden ingresar y editar importes con decimales de manera fluida.
-
----
-
-### PR-05: Copiar resumen de reparto al portapapeles para WhatsApp
-- **Tipo**: Nueva Característica (Feature)
-- **Prioridad**: Media
-- **Archivos afectados**:
-  - `src/components/TransfersSection.vue`
-- **Problema**:
-  - Luego de cargar los gastos grupales, los usuarios necesitan compartir el resultado en chats grupales (WhatsApp, Telegram) y deben transcribirlo manualmente.
-- **Solución propuesta**:
-  - Incorporar un botón en la cabecera de `TransfersSection` ("Copiar resumen" con ícono `bi-copy` / `bi-whatsapp`).
-  - Formatear el texto de las transferencias:
-    ```text
-    *Cuentas Claras - Reparto final:*
-    • Juan le debe a Carlos: $ 1.500,00
-    • María le debe a Carlos: $ 750,00
-    ```
-  - Copiar mediante `navigator.clipboard.writeText()` y mostrar feedback visual temporal ("Copiado").
-- **Criterio de aceptación**:
-  - El botón copia el balance formateado y muestra feedback temporal al usuario.
 
 ---
 
