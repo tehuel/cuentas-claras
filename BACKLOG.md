@@ -19,6 +19,7 @@
 | [PR-10](#pr-10-accesibilidad-web-atributo-lang-y-aria-labels) | ♿ A11y | Accesibilidad Web: atributo `lang="es"` y `aria-label`s en botones | **Baja** |
 | [PR-11](#pr-11-eliminación-de-hoja-de-estilos-bootstrap-redundante-en-indexhtml) | ⚡ Perf | Eliminación de hoja de estilos Bootstrap redundante en `index.html` | **Baja** |
 | [PR-12](#pr-12-pasos-de-test-y-lint-en-github-actions-y-actualización-a-v4) | 🛠️ CI/CD | Pasos de test y lint en GitHub Actions y actualización a v4 | **Baja** |
+| [PR-13](#pr-13-clarificación-de-naming-de-pagos-y-reparto-en-ui-y-código) | 💡 UX / Refactor | Clarificación de naming de Pagos y Reparto en UI y Código | **Media** |
 
 ---
 
@@ -221,4 +222,33 @@
   - Agregar pasos de ejecución para `npm run test` y `npm run lint` previos a la compilación y despliegue.
 - **Criterio de aceptación**:
   - El flujo de despliegue se detiene automáticamente si los tests o el linter fallan.
+
+---
+
+### PR-13: Clarificación de naming de Pagos y Reparto en UI y Código
+- **Tipo**: Mejora de UX / Refactorización de Dominio
+- **Prioridad**: Media
+- **Archivos afectados**:
+  - `src/components/PaymentsSection.vue`
+  - `src/components/PaymentAddForm.vue`
+  - `src/components/PaymentListItem.vue`
+  - `src/components/TransfersSection.vue`
+  - `src/stores/expenses.ts`
+  - `src/calculator.ts`
+  - `src/stores/expenses.test.ts`
+- **Problema**:
+  - La coexistencia de los términos "Pagos" (reembolsos manuales ya realizados entre dos personas) y "Reparto / Transferencias" (liquidación final sugerida por el algoritmo) genera confusión conceptual tanto en los usuarios de la aplicación como en el desarrollo del código.
+- **Solución propuesta**:
+  1. **UI**:
+     - Renombrar la sección "Pagos" a "Pagos directos" o "Reembolsos" (y el botón de acción a "+ Pago directo" o "+ Registrar reembolso").
+     - Renombrar la sección "Reparto" a "Reparto final" o "Liquidación de saldos" (con subtítulo descriptivo "Quién le debe a quién para quedar a mano").
+  2. **Código y Dominio**:
+     - Renombrar tipos e interfaces: `Payment` $\rightarrow$ `DirectPayment` o `Reimbursement`; `Transfer` $\rightarrow$ `SettlementTransfer`.
+     - En el store: renombrar `payments` $\rightarrow$ `directPayments`, garantizando retrocompatibilidad en `loadState()` para migrar sin pérdida de datos los estados previos guardados en `localStorage` (`state.payments || state.directPayments`).
+     - Renombrar getter `transfers` $\rightarrow$ `settlementTransfers` (o mantener un getter de compatibilidad).
+- **Criterio de aceptación**:
+  - La interfaz de usuario distingue con claridad meridiana los registros manuales previos de la liquidación final sugerida.
+  - El código y los tipos de TypeScript reflejan semánticamente la diferencia entre entradas históricas y salidas calculadas.
+  - Se mantiene retrocompatibilidad total con datos guardados previamente en `localStorage`.
+
 
