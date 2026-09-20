@@ -17,6 +17,7 @@
 | [PR-11](#pr-11-eliminación-de-hoja-de-estilos-bootstrap-redundante-en-indexhtml) | ⚡ Perf | Eliminación de hoja de estilos Bootstrap redundante en `index.html` | **Baja** |
 | [PR-12](#pr-12-pasos-de-test-y-lint-en-github-actions-y-actualización-a-v4) | 🛠️ CI/CD | Pasos de test y lint en GitHub Actions y actualización a v4 | **Baja** |
 | [PR-13](#pr-13-clarificación-de-naming-de-pagos-y-reparto-en-ui-y-código) | 💡 UX / Refactor | Clarificación de naming de Pagos y Reparto en UI y Código | **Media** |
+| [PR-14](#pr-14-reemplazo-de-watch-por-manejadores-de-eventos-y-foco-explícito) | ⚡ Refactor | Reemplazo de `watch` por manejadores de eventos y foco explícito | **Baja** |
 
 ---
 
@@ -188,5 +189,26 @@
   - La interfaz de usuario distingue con claridad meridiana los registros manuales previos de la liquidación final sugerida.
   - El código y los tipos de TypeScript reflejan semánticamente la diferencia entre entradas históricas y salidas calculadas.
   - Se mantiene retrocompatibilidad total con datos guardados previamente en `localStorage`.
+
+---
+
+### PR-14: Reemplazo de `watch` por manejadores de eventos y foco explícito
+- **Tipo**: Refactorización / Buenas Prácticas Vue
+- **Prioridad**: Baja
+- **Archivos afectados**:
+  - `src/components/MemberListItem.vue`
+  - `src/components/PaymentListItem.vue`
+  - `src/components/PaymentAddForm.vue`
+- **Problema**:
+  - Se utiliza `watch` de Vue para reaccionar a cambios iniciados por el usuario en formularios (reseteo de destinatario dependiente, limpieza de mensajes de error) y para dar foco a inputs al entrar en modo de edición (`watch(isEditing)`).
+  - En la Composition API de Vue, reaccionar a eventos del usuario mediante observadores reactivos implícitos agrega complejidad innecesaria, suscribe efectos secundarios pasivos y dificulta la trazabilidad en comparación con manejadores de eventos directos (`@change`, `@input`).
+- **Solución propuesta**:
+  - Reemplazar `watch(from)` y `watch(to)` por manejadores explícitos `@change="onFromChange"` y `@change="onToChange"` en `PaymentAddForm.vue` y `PaymentListItem.vue`.
+  - Reemplazar `watch(isEditing)` en `MemberListItem.vue` y `PaymentListItem.vue` ejecutando `await nextTick(); editInput.value?.focus()` directamente dentro del flujo de la acción `startEdit()`.
+  - Eliminar la importación de `watch` en todos los componentes donde ya no se requiera.
+- **Criterio de aceptación**:
+  - La interacción en formularios se gestiona de forma declarativa mediante eventos.
+  - El foco automático de inputs en modo edición y la limpieza de campos dependientes funcionan de forma idéntica sin utilizar `watch`.
+
 
 
