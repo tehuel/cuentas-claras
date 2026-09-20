@@ -13,6 +13,11 @@ const applyBalanceDelta = (balanceMap: Record<string, number>, person: string, d
     balanceMap[person] = (balanceMap[person] || 0) + delta
 }
 
+const byAmountDescending = (
+    [personA, amountA]: [string, number],
+    [personB, amountB]: [string, number],
+) => (amountB - amountA) || personA.localeCompare(personB)
+
 export function calculateBalance(
     transactions: Array<{ amount: number, from: string, participants: string[] }>,
     payments: Array<{ amount: number, from: string, to: string }> = [],
@@ -54,6 +59,9 @@ export function calculateBalance(
             creditors.push([person, amount])
         }
     })
+
+    debtors.sort(byAmountDescending)
+    creditors.sort(byAmountDescending)
 
     // Step 3: Settle debts with greedy algorithm (minimal transfers)
     const transfers: Transfer[] = []

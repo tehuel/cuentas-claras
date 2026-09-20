@@ -156,4 +156,70 @@ describe('calculateBalance', () => {
         expect(balance.length).toBe(1)
         expect(balance).toContainEqual({ amount: 50, from: 'Bob', to: 'Alice' })
     })
+
+    it('should minimize transfers by sorting debtors and creditors descending', () => {
+        // Alice +100, Charlie +100
+        // Bob -50, David -100, Emma -50
+        // Without descending sort, Bob(50) matches Alice(100) leading to 4 transfers.
+        // With descending sort, David(100) matches Alice(100), Bob(50) & Emma(50) match Charlie(100) -> 3 transfers.
+        const transactions: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] },
+            { amount: 200, from: 'Charlie', participants: ['Charlie', 'David'] },
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Emma'] }
+        ]
+
+        const balance = calculateBalance(transactions)
+        expect(balance.length).toBe(3)
+        expect(balance).toEqual([
+            { amount: 100, from: 'David', to: 'Alice' },
+            { amount: 50, from: 'Bob', to: 'Charlie' },
+            { amount: 50, from: 'Emma', to: 'Charlie' }
+        ])
+    })
+
+    it('should produce identical minimal transfers regardless of transaction insertion order', () => {
+        const orderA: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] },
+            { amount: 200, from: 'Charlie', participants: ['Charlie', 'David'] },
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Emma'] }
+        ]
+
+        const orderB: Transaction[] = [
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Emma'] },
+            { amount: 200, from: 'Charlie', participants: ['Charlie', 'David'] },
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] }
+        ]
+
+        const orderC: Transaction[] = [
+            { amount: 200, from: 'Charlie', participants: ['Charlie', 'David'] },
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Bob'] },
+            { amount: 100, from: 'Alice', participants: ['Alice', 'Emma'] }
+        ]
+
+        const balanceA = calculateBalance(orderA)
+        const balanceB = calculateBalance(orderB)
+        const balanceC = calculateBalance(orderC)
+
+        expect(balanceA.length).toBe(3)
+        expect(balanceB.length).toBe(3)
+        expect(balanceC.length).toBe(3)
+        expect(balanceA).toEqual(balanceB)
+        expect(balanceA).toEqual(balanceC)
+    })
+
+    it('should produce identical minimal transfers regardless of participant array ordering', () => {
+        const tx1: Transaction[] = [
+            { amount: 120, from: 'Alice', participants: ['Alice', 'Bob', 'Charlie', 'David'] }
+        ]
+        const tx2: Transaction[] = [
+            { amount: 120, from: 'Alice', participants: ['David', 'Charlie', 'Bob', 'Alice'] }
+        ]
+
+        const balance1 = calculateBalance(tx1)
+        const balance2 = calculateBalance(tx2)
+
+        expect(balance1.length).toBe(3)
+        expect(balance2.length).toBe(3)
+        expect(balance1).toEqual(balance2)
+    })
 })
