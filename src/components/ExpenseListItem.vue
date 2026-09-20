@@ -45,6 +45,7 @@ const { format } = useNumberFormat()
               class="btn btn-sm btn-outline-secondary"
               aria-label="Editar gasto"
               @click="isEditing = true"
+            >
               <i class="bi bi-pencil-fill" />
             </button>
             <button
@@ -52,6 +53,7 @@ const { format } = useNumberFormat()
               class="btn btn-sm btn-outline-danger"
               aria-label="Eliminar gasto"
               @click="deleteExpense"
+            >
               <i class="bi bi-trash2-fill" />
             </button>
           </div>
@@ -70,6 +72,7 @@ const { format } = useNumberFormat()
               type="checkbox"
               :checked="expense.participants.includes(member)"
               @change="toggleParticipant(member)"
+            >
             <label
               class="form-check-label mb-0"
               :for="`member-${expense.id}-${member}`"

@@ -155,6 +155,7 @@ const deletePayment = () => {
             class="btn btn-sm btn-outline-secondary"
             aria-label="Editar pago"
             @click="startEdit"
+          >
             <i class="bi bi-pencil-fill" />
           </button>
           <button
@@ -162,6 +163,7 @@ const deletePayment = () => {
             class="btn btn-sm btn-outline-danger"
             aria-label="Eliminar pago"
             @click="deletePayment"
+          >
             <i class="bi bi-trash2-fill" />
           </button>
         </div>
