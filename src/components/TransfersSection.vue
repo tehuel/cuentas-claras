@@ -44,7 +44,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="card bg-primary">
+  <section class="card border-primary">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <h2 class="h4 m-0">
@@ -54,7 +54,7 @@ onUnmounted(() => {
           v-if="store.transfers.length > 0"
           type="button"
           class="btn btn-sm"
-          :class="isCopied ? 'btn-success' : 'btn-light'"
+          :class="isCopied ? 'btn-success' : 'btn-primary'"
           aria-label="Copiar resumen de reparto para WhatsApp"
           @click="copySummary"
         >
